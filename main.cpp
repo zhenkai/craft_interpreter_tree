@@ -2,8 +2,11 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
+#include "error.h"
 
 namespace {
+  static BasicErrorReporter ERROR_REPORTER;
+
   void run(const std::string& source) {
     std::cout << source << std::endl;
   }
@@ -13,6 +16,9 @@ namespace {
     std::stringstream buffer;
     buffer << t.rdbuf();
     run(buffer.str());
+    if (ERROR_REPORTER.hadError()) {
+      exit(65);
+    }
   }
 
   void runPrompt() {
@@ -21,6 +27,7 @@ namespace {
       std::string line;
       std::getline(std::cin, line);
       run(line);
+      ERROR_REPORTER.reset();
     }
   }
 }

@@ -5,6 +5,7 @@ class ErrorReporter {
     ErrorReporter(): hadError_(false) {}
     virtual void report(int line, const std::string& where, const std::string& msg) = 0;
     bool hadError() { return hadError_; }
+    void reset() { hadError_ = false; }
 
   protected:
     bool hadError_;
