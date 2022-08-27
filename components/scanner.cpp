@@ -1,3 +1,4 @@
+#include <iostream>
 #include "scanner.h"
 #include <unordered_map>
 
@@ -136,7 +137,16 @@ void Scanner::number() {
     while (isDigit(peek())) advance();
   }
 
-  addToken(TokenType::NUMBER, std::stod(source_.substr(start_, current_-start_-1)));
+  std::string numStr = source_.substr(start_, current_-start_);
+  double res = 0;
+  try {
+    res = stod(numStr);
+  } catch (std::invalid_argument const& ex) {
+    std::cout <<"numStr [" << numStr << "] cannot be converted to double" << std::endl;
+    std::cout << ex.what() << std::endl;
+  }
+
+  addToken(TokenType::NUMBER, res);
 }
 
 void Scanner::identifier() {
@@ -160,7 +170,7 @@ void Scanner::identifier() {
     {"while", TokenType::WHILE},
   };
 
-  std::string value = source_.substr(start_, current_-start_-1);
+  std::string value = source_.substr(start_, current_-start_);
   auto type = keywords.find(value) != keywords.end() ? keywords.at(value) : TokenType::IDENTIFIER;
   addToken(type);
 }

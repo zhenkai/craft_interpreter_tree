@@ -2,8 +2,8 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
-#include "error.h"
-#include "scanner.h"
+#include "components/error.h"
+#include "components/scanner.h"
 
 namespace {
   static BasicErrorReporter ERROR_REPORTER;
