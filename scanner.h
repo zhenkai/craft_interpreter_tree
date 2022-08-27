@@ -25,9 +25,9 @@ private:
   void scanToken();
   bool match(char expected);
   char peek();
+  char peekNext();
   void string();
   void number();
-  char peekNext();
   void identifier();
 
   const std::string source_;

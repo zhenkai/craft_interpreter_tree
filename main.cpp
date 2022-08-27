@@ -3,12 +3,19 @@
 #include <sstream>
 #include <cstdlib>
 #include "error.h"
+#include "scanner.h"
 
 namespace {
   static BasicErrorReporter ERROR_REPORTER;
 
   void run(const std::string& source) {
-    std::cout << source << std::endl;
+    Scanner scanner(source, ERROR_REPORTER);
+    auto tokens = scanner.scanTokens();
+
+    // For now, just print the tokens.
+    for (const auto& token : tokens) {
+      std::cout << token.str() <<std::endl;
+    }
   }
   
   void runFile(const std::string& path) {
