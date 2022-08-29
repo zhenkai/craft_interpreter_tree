@@ -1,60 +1,64 @@
 #pragma once
 
 #include <any>
+#include <memory>
 #include "token.h"
 
-template <typename T> class Visitor;
+class Visitor;
 
 class Expr {
-  tempate <typename T> T accept(Visitor<T>& visitor) = 0;
+public:
+  virtual void accept(Visitor& visitor) const = 0;
+  virtual ~Expr()=default;
 };
+
+using ExprPtr = std::unique_ptr<Expr>;
 
 class Binary: public Expr {
 public:
-  Binary(const Expr& left, const Token& op, const Expr& right): left(left), op(op), right(right) {}
-  template <typename T> accept(Visitor<T>& visitor) override {
-    return visitor.visitBinaryExpr(this);
-  }
+  Binary(ExprPtr left, const Token& op, ExprPtr right): left(std::move(left)), op(op), right(std::move(right)) {}
+  void accept(Visitor& visitor) const override;
 
-  const Expr left;
+  const ExprPtr left;
   const Token op;
-  const Expr right;
+  const ExprPtr right;
 };
+
+using BinaryPtr = std::unique_ptr<Binary>;
 
 class Grouping: public Expr {
 public:
-  explicit Grouping(const Expr& expr): expr(expr) {}
-  template <typename T> accept(Visitor<T>& visitor) override {
-    return visitor.visitGroupingExpr(this);
-  }
+  explicit Grouping(ExprPtr expr): expr(std::move(expr)) {}
+  void accept(Visitor& visitor) const override;
 
-  const Expr expr;
+  const ExprPtr expr;
 };
+
+using GroupingPtr = std::unique_ptr<Grouping>;
 
 class Literal: public Expr {
 public:
-  explicit Literal(const std::any& value): value(value) {}
-  template <typename T> accept(Visitor<T>& visitor) override {
-    return visitor.visitLiteralExpr(this);
-  }
+  explicit Literal(std::any value): value(std::move(value)) {}
+  void accept(Visitor& visitor) const override;
 
   const std::any value;
 };
+using LiteralPtr = std::unique_ptr<Literal>;
 
 class Unary: public Expr {
 public:
-  Unary(const Token& op, const Expr& right): op(op), right(right) {}
-  template <typename T> accept(Visitor<T>& visitor) override {
-    return visitor.visitUnaryExpr(this);
-  }
+  Unary(const Token& op, ExprPtr right): op(op), right(std::move(right)) {}
+  void accept(Visitor& visitor) const override;
 
   const Token op;
-  const Expr right;
+  const ExprPtr right;
 };
+using UnaryPtr = std::unique_ptr<Unary>;
 
-template <typename T> class Visitor {
-  T visitBinaryExpr(const Binary& expr) = 0;
-  T visitGroupExpr(const Grouping& expr) = 0;
-  T visitLiteralExpr(const Literal& expr) = 0;
-  T visitUnaryExpr(const Unary& expr) = 0;
+class Visitor {
+public:
+  virtual void visitBinaryExpr(const Binary& expr) = 0;
+  virtual void visitGroupingExpr(const Grouping& expr) = 0;
+  virtual void visitLiteralExpr(const Literal& expr) = 0;
+  virtual void visitUnaryExpr(const Unary& expr) = 0;
 };
