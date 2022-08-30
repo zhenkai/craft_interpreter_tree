@@ -1,6 +1,7 @@
 #pragma once
 
 #include "expr.h"
+#include "token.h"
 #include <memory>
 
 using StmtVisitorResT = void;
@@ -35,9 +36,19 @@ public:
 
 using PrintStmtPtr = std::unique_ptr<PrintStmt>;
 
+class VarStmt: public Stmt {
+public:
+  VarStmt(const Token& name, ExprPtr expr): name(name), expr(std::move(expr)) {}
+  StmtVisitorResT accept(StmtVisitor& visitor) const override;
+
+  const Token name;
+  const ExprPtr expr;
+}
+
 class StmtVisitor {
 public:
   virtual StmtVisitorResT visitExpressionStmt(const ExpressionStmt& stmt) = 0;
   virtual StmtVisitorResT visitPrintStmt(const PrintStmt& stmt) = 0;
+  virtual StmtVisitorResT visitVarStmt(const VarStmt& stmt) = 0;
   virtual ~StmtVisitor()=default;
 };

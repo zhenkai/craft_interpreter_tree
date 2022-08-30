@@ -15,3 +15,7 @@ ExprVisitorResT Literal::accept(ExprVisitor& visitor) const {
 ExprVisitorResT Unary::accept(ExprVisitor& visitor) const {
   return visitor.visitUnaryExpr(*this);
 }
+
+ExprVisitorResT Variable::accept(ExprVisitor& visitor) const {
+  return visitor.visitVariableExpr(*this);
+}

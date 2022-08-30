@@ -7,3 +7,7 @@ StmtVisitorResT ExpressionStmt::accept(StmtVisitor& visitor) const {
 StmtVisitorResT PrintStmt::accept(StmtVisitor& visitor) const {
   return visitor.visitPrintStmt(*this);
 }
+
+StmtVisitorResT VarStmt::accept(StmtVisitor& visitor) const {
+  return visitor.visitVarStmt(*this);
+}

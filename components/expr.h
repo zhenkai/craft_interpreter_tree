@@ -57,11 +57,21 @@ public:
 };
 using UnaryPtr = std::unique_ptr<Unary>;
 
+class Variable: public Expr {
+public:
+  Variable(const Token& name): name(name) {}
+  ExprVisitorResT accept(ExprVisitor& visitor) const override;
+
+  const Token name;
+};
+using VariablePtr = std::unique_ptr<Variable>;
+
 class ExprVisitor {
 public:
   virtual ExprVisitorResT visitBinaryExpr(const Binary& expr) = 0;
   virtual ExprVisitorResT visitGroupingExpr(const Grouping& expr) = 0;
   virtual ExprVisitorResT visitLiteralExpr(const Literal& expr) = 0;
   virtual ExprVisitorResT visitUnaryExpr(const Unary& expr) = 0;
+  virtual ExprVisitorResT visitVariableExpr(const Variable& expr) = 0;
   virtual ~ExprVisitor()=default;
 };

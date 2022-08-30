@@ -19,6 +19,18 @@ unary          → ( "!" | "-" ) unary
                | primary ;
 primary        → NUMBER | STRING | "true" | "false" | "nil"
                | "(" expression ")" ;
+               | IDENTIFIER ;
+***/
+/*** Statement
+program        → declaration* EOF ;
+
+declaration    → varDecl
+               | statement ;
+
+varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
+
+statement      → exprStmt
+               | printStmt ;
 ***/
 class Parser {
 public:
@@ -26,9 +38,11 @@ public:
   //ExprPtr parse();
   std::vector<StmtPtr> parse();
 private:
+  StmtPtr declaration();
   StmtPtr statement();
   StmtPtr printStatement();
   StmtPtr expressionStatement();
+  StmtPtr varStatement();
   // ----------------------------------
   ExprPtr expression();
   ExprPtr equality();

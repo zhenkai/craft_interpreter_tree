@@ -1,5 +1,6 @@
 #include "parser.h"
 #include "expr.h"
+#include <iostream>
 
 ExprPtr Parser::expression() {
   return equality();
@@ -84,13 +85,19 @@ ExprPtr Parser::primary() {
     return std::make_unique<Literal>(previous().literal);
   }
 
+  if (match({TokenType::IDENTIFIER})) {
+    return std::make_unique<Variable>(previous());
+  }
+
   if (match({TokenType::LEFT_PAREN})) {
     ExprPtr expr = expression();
     consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
     return std::make_unique<Grouping>(std::move(expr));
   }
 
-  throw error(peek(), "Expect expression.");
+  // throw away un-recognized stuff
+  advance();
+  throw error(previous(), "Expect expression.");
 }
 
 Token Parser::consume(const TokenType type, const std::string& msg) {
@@ -142,7 +149,16 @@ void Parser::synchronize() {
 //    return nullptr;
 //  }
 //}
+StmtPtr Parser::declaration() {
+  try {
+    if(match({TokenType::VAR})) return varStatement();
 
+    return statement();
+  } catch (ParseError* pe) {
+    synchronize();
+    return nullptr;
+  }
+}
 StmtPtr Parser::statement() {
   if (match({TokenType::PRINT})) return printStatement();
 
@@ -161,10 +177,20 @@ StmtPtr Parser::expressionStatement() {
   return std::make_unique<ExpressionStmt>(std::move(expr));
 }
 
+StmtPtr Parser::varStatement() {
+  Token name = consume(TokenType::IDENTIFIER, "Expect variable name.");
+  ExprPtr initializer = nullptr;
+  if (match(TokenType::EQUAL)) {
+      initializer = expression();
+  }
+  consume(TokenType::SEMICOLON, "Expect ';' after expression.");
+  return std::make_unique<VarStmt>(name, std::move(initializer));
+}
+
 std::vector<StmtPtr> Parser::parse() {
   std::vector<StmtPtr> stmts;
   while(!isAtEnd()) {
-    stmts.push_back(statement());
+    stmts.push_back(declaration());
   }
   return stmts;
 }

@@ -40,3 +40,9 @@ ExprVisitorResT AstPrinter::visitUnaryExpr(const Unary& expr) {
   parenthesize(expr.op.lexeme, exprs);
   return ExprVisitorResT();
 }
+
+ExprVisitorResT AstPrinter::visitVariableExpr(const Variable& expr) {
+  std::vector<const Expr*> exprs = {expr.right.get()};
+  s_ << "var " << expr.name.lexeme;
+  return ExprVisitorResT();
+}
