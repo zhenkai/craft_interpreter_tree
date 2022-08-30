@@ -135,10 +135,36 @@ void Parser::synchronize() {
   }
 }
 
-ExprPtr Parser::parse() {
-  try {
-    return expression();
-  } catch (ParseError* pe) {
-    return nullptr;
+//ExprPtr Parser::parse() {
+//  try {
+//    return expression();
+//  } catch (ParseError* pe) {
+//    return nullptr;
+//  }
+//}
+
+StmtPtr Parser::statement() {
+  if (match({TokenType::PRINT})) return printStatement();
+
+  return expressionStatement();
+}
+
+StmtPtr Parser::printStatement() {
+  ExprPtr value = expression();
+  consume(TokenType::SEMICOLON, "Expect ';' after value.");
+  return std::make_unique<PrintStmt>(std::move(value));
+}
+
+StmtPtr Parser::expressionStatement() {
+  ExprPtr expr = expression();
+  consume(TokenType::SEMICOLON, "Expect ';' after expression.");
+  return std::make_unique<ExpressionStmt>(std::move(expr));
+}
+
+std::vector<StmtPtr> Parser::parse() {
+  std::vector<StmtPtr> stmts;
+  while(!isAtEnd()) {
+    stmts.push_back(statement());
   }
+  return stmts;
 }

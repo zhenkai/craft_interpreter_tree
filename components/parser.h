@@ -5,10 +5,11 @@
 #include "token.h"
 #include "error.h"
 #include "expr.h"
+#include "stmt.h"
 
 class ParseError : public std::exception {};
 
-/***
+/*** Expression
 expression     → equality ;
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
@@ -22,8 +23,13 @@ primary        → NUMBER | STRING | "true" | "false" | "nil"
 class Parser {
 public:
   Parser(const std::vector<const Token>& tokens, ErrorReporter& errorReporter ): tokens_(tokens), current_(0), errorReporter_(errorReporter) {}
-  ExprPtr parse();
+  //ExprPtr parse();
+  std::vector<StmtPtr> parse();
 private:
+  StmtPtr statement();
+  StmtPtr printStatement();
+  StmtPtr expressionStatement();
+  // ----------------------------------
   ExprPtr expression();
   ExprPtr equality();
   bool match(const std::vector<TokenType>&& types); 

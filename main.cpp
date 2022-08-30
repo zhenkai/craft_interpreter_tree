@@ -18,16 +18,14 @@ namespace {
     auto tokens = scanner.scanTokens();
     Parser parser(tokens, ERROR_REPORTER);
 
-    auto expression = parser.parse();
+    auto stmts = parser.parse();
 
     if (ERROR_REPORTER.hadError()) {
       return;
     }
-    
-    AstPrinter p;
-    std::cout << p.print(*expression) << std::endl;
+
     Interpreter ip(ERROR_REPORTER);
-    ip.interpret(*expression);
+    ip.interpret(stmts);
   }
   
   void runFile(const std::string& path) {

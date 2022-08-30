@@ -1,6 +1,7 @@
 #include "interpreter.h"
 #include "token.h"
 #include "../utils/any_util.h"
+#include <vector>
 #include <iostream>
 
 namespace {
@@ -95,10 +96,26 @@ ExprVisitorResT Interpreter::eval(const Expr& expr) {
   return expr.accept(*this);
 }
 
-void Interpreter::interpret(const Expr& expr) {
+StmtVisitorResT Interpreter::visitPrintStmt(const PrintStmt& stmt) {
+  auto value = eval(stmt.expr);
+  std::cout << anyToStr(value) << std::endl;
+  return StmtVisitorResT();
+}
+
+StmtVisitorResT Interpreter::visitExpressionStmt(const ExpressionStmt& stmt) {
+  eval(stmt.expr);
+  return StmtVisitorResT();
+}
+
+StmtVisitorResT Interpreter::execute(const StmtPtr& stmt) {
+  stmt->accept(*this);
+}
+
+void Interpreter::interpret(const std::vector<StmtPtr>& stmts) {
   try {
-    auto res = eval(expr);
-    std::cout << anyToStr(res) << std::endl;
+    for (const auto& stmt : stmts) {
+      execute(stmt);
+    }
   } catch (RuntimeError* e) {
     errorReporter_.reportRuntimeError(*e);
   }
