@@ -7,6 +7,7 @@
 #include "components/scanner.h"
 #include "components/expr.h"
 #include "components/astprinter.h"
+#include "components/parser.h"
 
 namespace {
   static BasicErrorReporter ERROR_REPORTER;
@@ -14,11 +15,16 @@ namespace {
   void run(const std::string& source) {
     Scanner scanner(source, ERROR_REPORTER);
     auto tokens = scanner.scanTokens();
+    Parser parser(tokens, ERROR_REPORTER);
 
-    // For now, just print the tokens.
-    for (const auto& token : tokens) {
-      std::cout << token.str() <<std::endl;
+    auto expression = parser.parse();
+
+    if (ERROR_REPORTER.hadError()) {
+      return;
     }
+    
+    AstPrinter p;
+    std::cout << p.print(*expression) << std::endl;
   }
   
   void runFile(const std::string& path) {
@@ -49,15 +55,6 @@ int main(int argc, char *argv[]) {
     case 2:
       runFile(argv[0]); break;
     default:
-      Token t(TokenType::MINUS, "-", std::any(), 1);
-      auto lit = std::make_unique<Literal>(123);
-      auto u = std::make_unique<Unary>(t, std::move(lit));
-      Token t2(TokenType::STAR, "*", std::any(), 1);
-      auto lit2 = std::make_unique<Literal>(45.66);
-      auto g = std::make_unique<Grouping>(std::move(lit2));
-      auto b =std::make_unique<Binary>(std::move(u), t2, std::move(g));
-      AstPrinter p;
-      std::cout << p.print(*b) << std::endl;
       std::cout << "Usage: lox [script]" << std::endl;
       return 64;
   }

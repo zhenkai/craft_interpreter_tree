@@ -1,4 +1,5 @@
 #include "token.h"
+#include "../utils/any_util.h"
 #include <unordered_map>
 #include <sstream>
 
@@ -43,20 +44,7 @@ std::string Token::str() const {
     {TokenType::EOF_, "EOF"},
   };
   std::stringstream s;
-  s << "Token type: " << tokenNames.at(type_) << ", lexeme: " << lexeme_ << ", literal: ";
-  if (literal_.has_value()) {
-    if (literal_.type() == typeid(std::string)) {
-      s << std::any_cast<std::string>(literal_);
-    } else if (literal_.type() == typeid(double)) {
-      s << std::any_cast<double>(literal_);
-    } else if (literal_.type() == typeid(int)) {
-      s << std::any_cast<int>(literal_);
-    } else if (literal_.type() == typeid(float)) {
-      s << std::any_cast<float>(literal_);
-    } else {
-      s << "LITERAL: unknown";
-    }
-  }
+  s << "Token type: " << tokenNames.at(type) << ", lexeme: " << lexeme << ", literal: ";
+  s << anyToStr(literal);
   return s.str();
-  // return tokenNames.at(type_) + " " + lexeme_ + " " + literal_;
 }
