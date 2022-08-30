@@ -63,4 +63,5 @@ public:
   virtual VisitorResT visitGroupingExpr(const Grouping& expr) = 0;
   virtual VisitorResT visitLiteralExpr(const Literal& expr) = 0;
   virtual VisitorResT visitUnaryExpr(const Unary& expr) = 0;
+  virtual ~Visitor()=default;
 };

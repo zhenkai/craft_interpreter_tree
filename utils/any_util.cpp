@@ -1,5 +1,6 @@
 #include "any_util.h"
 #include <sstream>
+#include <limits>
 
 std::string anyToStr(const std::any& a) {
   std::stringstream s;
@@ -15,9 +16,29 @@ std::string anyToStr(const std::any& a) {
     } else if (a.type() == typeid(bool)) {
       s << (std::any_cast<bool>(a) ? "true" : "false");
     } else {
-      s << "LITERAL: " << a.type().name();
+      throw std::exception("unsupported literal type");
     }
     return s.str();
   }
   return "Nil";
+}
+
+bool anyEqual(const std::any& a, const std::any& b) {
+  if (!a.has_value()) { return !b.has_value(); }
+  if (!b.has_value()) { return !a.has_value(); }
+  
+  if (a.type() != b.type()) { return false; }
+
+  if (a.type() == typeid(std::string)) {
+    return std::any_cast<std::string>(a) == std::any_cast<std::string>(b);
+  } else if (a.type() == typeid(double)) {
+    return fabs(std::any_cast<double>(a) - std::any_cast<double>(b)) < std::numeric_limits<double>::epsilon;
+  } else if (a.type() == typeid(int)) {
+    return std::any_cast<int>(a) == std::any_cast<int>(b);
+  } else if (a.type() == typeid(float)) {
+    return fabs(std::any_cast<float>(a) - std::any_cast<float>(b)) < std::numeric_limits<float>::epsilon;
+  } else if (a.type() == typeid(bool)) {
+    return std::any_cast<bool>(a) == std::any_cast<bool>(b);
+  } 
+  throw std::exception("unsupported type for comparison");
 }
