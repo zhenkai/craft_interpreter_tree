@@ -1,12 +1,12 @@
 #include "expr.h"
 #include <sstream>
 
-class AstPrinter: public Visitor {
+class AstPrinter: public ExprVisitor {
 public:
-  VisitorResT visitBinaryExpr(const Binary& expr) override;
-  VisitorResT visitGroupingExpr(const Grouping& expr) override;
-  VisitorResT visitLiteralExpr(const Literal& expr) override;
-  VisitorResT visitUnaryExpr(const Unary& expr) override;
+  ExprVisitorResT visitBinaryExpr(const Binary& expr) override;
+  ExprVisitorResT visitGroupingExpr(const Grouping& expr) override;
+  ExprVisitorResT visitLiteralExpr(const Literal& expr) override;
+  ExprVisitorResT visitUnaryExpr(const Unary& expr) override;
   std::string print(const Expr& expr);
 private:
   void parenthesize(const std::string& name, const std::vector<const Expr*>& exprs);

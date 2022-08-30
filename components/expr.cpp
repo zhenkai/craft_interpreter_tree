@@ -1,17 +1,17 @@
 #include "expr.h"
 
-VisitorResT Binary::accept(Visitor& visitor) const {
+ExprVisitorResT Binary::accept(ExprVisitor& visitor) const {
   return visitor.visitBinaryExpr(*this);
 }
 
-VisitorResT Grouping::accept(Visitor& visitor) const {
+ExprVisitorResT Grouping::accept(ExprVisitor& visitor) const {
   return visitor.visitGroupingExpr(*this);
 }
 
-VisitorResT Literal::accept(Visitor& visitor) const {
+ExprVisitorResT Literal::accept(ExprVisitor& visitor) const {
   return visitor.visitLiteralExpr(*this);
 }
 
-VisitorResT Unary::accept(Visitor& visitor) const {
+ExprVisitorResT Unary::accept(ExprVisitor& visitor) const {
   return visitor.visitUnaryExpr(*this);
 }

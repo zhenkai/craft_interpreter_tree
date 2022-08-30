@@ -3,8 +3,8 @@
 #include <unordered_map>
 #include <sstream>
 
-std::string Token::str() const {
-  static const std::unordered_map<TokenType, std::string> tokenNames {
+namespace {
+static const std::unordered_map<TokenType, std::string> tokenNames {
     {TokenType::LEFT_PAREN, "("},
     {TokenType::RIGHT_PAREN, ")"},
     {TokenType::LEFT_BRACE, "{TokenType::"},
@@ -42,9 +42,18 @@ std::string Token::str() const {
     {TokenType::VAR, "var"},
     {TokenType::WHILE, "while"},
     {TokenType::EOF_, "EOF"},
-  };
+};
+}
+
+std::string Token::str() const {
   std::stringstream s;
   s << "Token type: " << tokenNames.at(type) << ", lexeme: " << lexeme << ", literal: ";
   s << anyToStr(literal);
+  return s.str();
+}
+
+std::string Token::errorStr() const {
+  std::stringstream s;
+  s << "Line " << line << ", operator '" <<  tokenNames.at(type) << "'";
   return s.str();
 }

@@ -17,26 +17,26 @@ void AstPrinter::parenthesize(const std::string& name, const std::vector<const E
   s_ << ")";
 }
 
-VisitorResT AstPrinter::visitBinaryExpr(const Binary& expr) {
+ExprVisitorResT AstPrinter::visitBinaryExpr(const Binary& expr) {
   std::vector<const Expr*> exprs = {expr.left.get(), expr.right.get()};
   parenthesize(expr.op.lexeme, exprs);
-  return VisitorResT();
+  return ExprVisitorResT();
 }
 
-VisitorResT AstPrinter::visitGroupingExpr(const Grouping& expr) {
+ExprVisitorResT AstPrinter::visitGroupingExpr(const Grouping& expr) {
   std::vector<const Expr*> exprs = {expr.expr.get()};
   parenthesize("group", exprs);
-  return VisitorResT();
+  return ExprVisitorResT();
 }
 
-VisitorResT AstPrinter::visitLiteralExpr(const Literal& expr) {
+ExprVisitorResT AstPrinter::visitLiteralExpr(const Literal& expr) {
   auto& value = expr.value;
   s_ << anyToStr(value);
-  return VisitorResT();
+  return ExprVisitorResT();
 }
 
-VisitorResT AstPrinter::visitUnaryExpr(const Unary& expr) {
+ExprVisitorResT AstPrinter::visitUnaryExpr(const Unary& expr) {
   std::vector<const Expr*> exprs = {expr.right.get()};
   parenthesize(expr.op.lexeme, exprs);
-  return VisitorResT();
+  return ExprVisitorResT();
 }

@@ -28,6 +28,7 @@ class Token {
 public:
   Token(TokenType type, const std::string& lexeme, const std::any& literal, int line): type(type), lexeme(lexeme), literal(literal), line(line) {}
   std::string str() const;
+  std::string errorStr() const;
   const TokenType type;
   const std::string lexeme;
   const std::any literal;

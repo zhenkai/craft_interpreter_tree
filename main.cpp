@@ -9,7 +9,6 @@
 #include "components/astprinter.h"
 #include "components/parser.h"
 #include "components/interpreter.h"
-#include "utils/any_util.h"
 
 namespace {
   static BasicErrorReporter ERROR_REPORTER;
@@ -28,7 +27,7 @@ namespace {
     AstPrinter p;
     std::cout << p.print(*expression) << std::endl;
     Interpreter ip(ERROR_REPORTER);
-    std::cout << anyToStr(ip.interpret(*expression)) << std::endl;
+    ip.interpret(*expression);
   }
   
   void runFile(const std::string& path) {

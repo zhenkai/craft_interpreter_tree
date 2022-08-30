@@ -7,8 +7,7 @@ void BasicErrorReporter::report(int line, const std::string& where, const std::s
   hadError_ = true;
 }
 
-void BasicErrorReporter::reportRuntimeError(const RuntimeError& error) {
-System.err.println(error.getMessage() +
-        "\n[line " + error.token.line + "]");
+void BasicErrorReporter::reportRuntimeError(const RuntimeError& error) const {
+  std::cout << error.what() << std::endl;
   hadRuntimeError_ = true;
 }
