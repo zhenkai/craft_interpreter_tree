@@ -66,6 +66,16 @@ public:
 };
 using VariablePtr = std::unique_ptr<Variable>;
 
+class Assignment: public Expr {
+public:
+  Assignment(const Token& name, ExprPtr value): name(name), value(std::move(value)) {}
+  ExprVisitorResT accept(ExprVisitor& visitor) const override;
+
+  const Token name;
+  const ExprPtr value;
+};
+using AssignmentPtr = std::unique_ptr<Assignment>;
+
 class ExprVisitor {
 public:
   virtual ExprVisitorResT visitBinaryExpr(const Binary& expr) = 0;
@@ -73,5 +83,6 @@ public:
   virtual ExprVisitorResT visitLiteralExpr(const Literal& expr) = 0;
   virtual ExprVisitorResT visitUnaryExpr(const Unary& expr) = 0;
   virtual ExprVisitorResT visitVariableExpr(const Variable& expr) = 0;
+  virtual ExprVisitorResT visitAssignmentExpr(const Assignment& expr) = 0;
   virtual ~ExprVisitor()=default;
 };

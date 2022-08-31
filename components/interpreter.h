@@ -13,6 +13,7 @@ public:
   ExprVisitorResT visitLiteralExpr(const Literal& expr) override;
   ExprVisitorResT visitUnaryExpr(const Unary& expr) override;
   ExprVisitorResT visitVariableExpr(const Variable& expr) override;
+  ExprVisitorResT visitAssignmentExpr(const Assignment& expr) override;
   StmtVisitorResT visitPrintStmt(const PrintStmt& stmt) override;
   StmtVisitorResT visitExpressionStmt(const ExpressionStmt& stmt) override;
   StmtVisitorResT visitVarStmt(const VarStmt& stmt) override;

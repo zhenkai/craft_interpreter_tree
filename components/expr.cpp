@@ -19,3 +19,7 @@ ExprVisitorResT Unary::accept(ExprVisitor& visitor) const {
 ExprVisitorResT Variable::accept(ExprVisitor& visitor) const {
   return visitor.visitVariableExpr(*this);
 }
+
+ExprVisitorResT Assignment::accept(ExprVisitor& visitor) const {
+  return visitor.visitAssignmentExpr(*this);
+}

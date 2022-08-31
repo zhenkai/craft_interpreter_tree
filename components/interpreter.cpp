@@ -92,6 +92,12 @@ ExprVisitorResT Interpreter::visitVariableExpr(const Variable& expr) {
   return env_.get(expr.name);
 }
 
+ExprVisitorResT Interpreter::visitAssignmentExpr(const Assignment& expr) {
+  auto value = eval(expr.value);
+  env_.assign(expr.name, value);
+  return value;
+}
+
 ExprVisitorResT Interpreter::eval(const ExprPtr& expr) {
   return expr->accept(*this);
 }

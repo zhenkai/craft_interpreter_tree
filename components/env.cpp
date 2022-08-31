@@ -10,3 +10,8 @@ std::any Environment::get(const Token& token) {
 
   throw new RuntimeError("[Line " + std::to_string(token.line) + "] Undefined variable : " + name);
 }
+
+void Environment::assign(const Token& name, const std::any& value) {
+  get(name);
+  values_[name.lexeme] = value;
+}

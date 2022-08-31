@@ -3,7 +3,22 @@
 #include <iostream>
 
 ExprPtr Parser::expression() {
-  return equality();
+  return assignment();
+}
+
+ExprPtr Parser::assignment() {
+  ExprPtr expr = equality();
+
+  if (match({TokenType::EQUAL})) {
+    Token equals = previous();
+    ExprPtr value = assignment();
+    if (Variable* v = dynamic_cast<Variable*>(expr.get())) {
+      return std::make_unique<Assignment>(v->name, std::move(value));
+    }
+    errorReporter_.report(equals.line, " = ", "Invalid assignment target.");
+  }
+
+  return expr;
 }
 
 ExprPtr Parser::equality() {

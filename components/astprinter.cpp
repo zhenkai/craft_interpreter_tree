@@ -45,3 +45,9 @@ ExprVisitorResT AstPrinter::visitVariableExpr(const Variable& expr) {
   s_ << "var " << expr.name.lexeme;
   return ExprVisitorResT();
 }
+
+ExprVisitorResT AstPrinter::visitAssignmentExpr(const Assignment& expr) {
+  std::vector<const Expr*> exprs = {expr.value.get()};
+  parenthesize(expr.name.lexeme, exprs);
+  return ExprVisitorResT();
+}

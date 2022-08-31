@@ -10,7 +10,9 @@
 class ParseError : public std::exception {};
 
 /*** Expression
-expression     → equality ;
+expression     → assignment ;
+assignment     → IDENTIFIER "=" assignment
+               | equality ;
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term           → factor ( ( "-" | "+" ) factor )* ;
@@ -44,8 +46,6 @@ private:
   StmtPtr expressionStatement();
   StmtPtr varStatement();
   // ----------------------------------
-  ExprPtr expression();
-  ExprPtr equality();
   bool match(const std::vector<TokenType>&& types); 
 
   Token peek() { return tokens_[current_];}
@@ -71,6 +71,9 @@ private:
     return peek().type == type;
   }
 
+  ExprPtr expression();
+  ExprPtr assignment();
+  ExprPtr equality();
   ExprPtr comparison();
   ExprPtr term();
   ExprPtr factor();
