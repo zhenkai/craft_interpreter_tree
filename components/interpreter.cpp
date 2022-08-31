@@ -110,6 +110,17 @@ ExprVisitorResT Interpreter::visitAssignmentExpr(const Assignment &expr) {
   return value;
 }
 
+ExprVisitorResT Interpreter::visitLogicalExpr(const Logical &expr) {
+  auto left = eval(expr.left);
+  if (expr.op.type == TokenType::OR) {
+    if (isTruthy(left)) { return left;}
+  } else {
+    if (!isTruthy(left)) {return left;}
+  }
+
+  return eval(expr.right);
+}
+
 ExprVisitorResT Interpreter::eval(const ExprPtr &expr) {
   return expr->accept(*this);
 }

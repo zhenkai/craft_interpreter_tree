@@ -9,6 +9,7 @@ public:
   ExprVisitorResT visitUnaryExpr(const Unary &expr) override;
   ExprVisitorResT visitVariableExpr(const Variable &expr) override;
   ExprVisitorResT visitAssignmentExpr(const Assignment &expr) override;
+  ExprVisitorResT visitLogicalExpr(const Logical &expr) override;
   std::string print(const Expr &expr);
 
 private:

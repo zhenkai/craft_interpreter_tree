@@ -24,6 +24,12 @@ ExprVisitorResT AstPrinter::visitBinaryExpr(const Binary &expr) {
   return ExprVisitorResT();
 }
 
+ExprVisitorResT AstPrinter::visitLogicalExpr(const Logical &expr) {
+  std::vector<const Expr *> exprs = {expr.left.get(), expr.right.get()};
+  parenthesize(expr.op.lexeme, exprs);
+  return ExprVisitorResT();
+}
+
 ExprVisitorResT AstPrinter::visitGroupingExpr(const Grouping &expr) {
   std::vector<const Expr *> exprs = {expr.expr.get()};
   parenthesize("group", exprs);

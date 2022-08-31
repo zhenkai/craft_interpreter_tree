@@ -23,3 +23,7 @@ ExprVisitorResT Variable::accept(ExprVisitor &visitor) const {
 ExprVisitorResT Assignment::accept(ExprVisitor &visitor) const {
   return visitor.visitAssignmentExpr(*this);
 }
+
+ExprVisitorResT Logical::accept(ExprVisitor &visitor) const {
+  return visitor.visitLogicalExpr(*this);
+}

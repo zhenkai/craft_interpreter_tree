@@ -12,7 +12,9 @@ class ParseError : public std::exception {};
 /*** Expression
 expression     → assignment ;
 assignment     → IDENTIFIER "=" assignment
-               | equality ;
+               | logic_or ;
+logic_or       → logic_and ( "or" logic_and )* ;
+logic_and      → equality ( "and" equality )* ;
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term           → factor ( ( "-" | "+" ) factor )* ;
@@ -88,6 +90,8 @@ private:
   ExprPtr factor();
   ExprPtr unary();
   ExprPtr primary();
+  ExprPtr orExpr();
+  ExprPtr andExpr();
   Token consume(const TokenType type, const std::string &msg);
   ParseError *error(const Token &token, const std::string &msg);
   void synchronize();

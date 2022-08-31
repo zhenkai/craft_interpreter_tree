@@ -78,6 +78,18 @@ public:
 };
 using AssignmentPtr = std::unique_ptr<Assignment>;
 
+class Logical : public Expr {
+public:
+  Logical(const Token &op, ExprPtr left, ExprPtr right): op(op), left(std::move(left)), right(std::move(right)) {}
+  ExprVisitorResT accept(ExprVisitor &visitor) const override;
+
+  const Token op;
+  const ExprPtr left;
+  const ExprPtr right;
+};
+
+using LogicalPtr = std::unique_ptr<Logical>;
+
 class ExprVisitor {
 public:
   virtual ExprVisitorResT visitBinaryExpr(const Binary &expr) = 0;
@@ -86,5 +98,6 @@ public:
   virtual ExprVisitorResT visitUnaryExpr(const Unary &expr) = 0;
   virtual ExprVisitorResT visitVariableExpr(const Variable &expr) = 0;
   virtual ExprVisitorResT visitAssignmentExpr(const Assignment &expr) = 0;
+  virtual ExprVisitorResT visitLogicalExpr(const Logical &expr) = 0;
   virtual ~ExprVisitor() = default;
 };

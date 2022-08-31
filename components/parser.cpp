@@ -5,7 +5,7 @@
 ExprPtr Parser::expression() { return assignment(); }
 
 ExprPtr Parser::assignment() {
-  ExprPtr expr = equality();
+  ExprPtr expr = orExpr();
 
   if (match({TokenType::EQUAL})) {
     Token equals = previous();
@@ -18,6 +18,28 @@ ExprPtr Parser::assignment() {
 
   return expr;
 }
+
+ExprPtr Parser::orExpr() {
+  ExprPtr expr = andExpr();
+  while (match({TokenType::OR})) {
+    Token op = previous();
+    ExprPtr right = andExpr();
+    expr = std::make_unique<Logical>(op, std::move(expr), std::move(right));
+  }
+
+  return expr;
+}
+
+ExprPtr Parser::andExpr() {
+  ExprPtr expr = equality();
+  while (match({TokenType::AND})) {
+    Token op = previous();
+    ExprPtr right = equality();
+    expr = std::make_unique<Logical>(op, std::move(expr), std::move(right));
+  }
+  return expr;
+}
+
 
 ExprPtr Parser::equality() {
   ExprPtr expr = comparison();
