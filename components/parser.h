@@ -32,8 +32,13 @@ declaration    → varDecl
 varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
 
 statement      → exprStmt
+               | ifStmt
                | printStmt
                | block ;
+
+ifStmt         → "if" "(" expression ")" statement
+               ( "else" statement )? ;
+
 block          → "{" declaration* "}" ;
 ***/
 class Parser {
@@ -46,6 +51,7 @@ public:
 private:
   StmtPtr declaration();
   StmtPtr statement();
+  StmtPtr ifStatement();
   StmtPtr printStatement();
   StmtPtr expressionStatement();
   StmtPtr varStatement();

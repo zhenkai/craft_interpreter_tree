@@ -176,12 +176,28 @@ StmtPtr Parser::declaration() {
   }
 }
 StmtPtr Parser::statement() {
+  if (match({TokenType::IF}))
+    return ifStatement();
   if (match({TokenType::PRINT}))
     return printStatement();
   if (match({TokenType::LEFT_BRACE}))
     return block();
 
   return expressionStatement();
+}
+
+StmtPtr Parser::ifStatement() {
+  consume(TokenType::LEFT_PAREN, "Expect '(' after if.");
+  auto condition = expression();
+  consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
+  auto thenStmt = statement();
+  StmtPtr elseStmt = nullptr;
+  if (match({TokenType::ELSE})) {
+    elseStmt = statement();
+  }
+
+  return std::make_unique<IfStmt>(std::move(condition), std::move(thenStmt),
+                                  std::move(elseStmt));
 }
 
 StmtPtr Parser::printStatement() {

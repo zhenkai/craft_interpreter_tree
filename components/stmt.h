@@ -57,11 +57,28 @@ public:
   const std::vector<StmtPtr> stmts;
 };
 
+using BlockPtr = std::unique_ptr<Block>;
+
+class IfStmt : public Stmt {
+public:
+  IfStmt(ExprPtr condition, StmtPtr thenStmt, StmtPtr elseStmt)
+      : condition(std::move(condition)), thenStmt(std::move(thenStmt)),
+        elseStmt(std::move(elseStmt)) {}
+  StmtVisitorResT accept(StmtVisitor &visitor) const override;
+
+  const ExprPtr condition;
+  const StmtPtr thenStmt;
+  const StmtPtr elseStmt;
+};
+
+using IfStmtPtr = std::unique_ptr<IfStmt>;
+
 class StmtVisitor {
 public:
   virtual StmtVisitorResT visitExpressionStmt(const ExpressionStmt &stmt) = 0;
   virtual StmtVisitorResT visitPrintStmt(const PrintStmt &stmt) = 0;
   virtual StmtVisitorResT visitVarDecl(const VarDecl &stmt) = 0;
   virtual StmtVisitorResT visitBlock(const Block &block) = 0;
+  virtual StmtVisitorResT visitIfStmt(const IfStmt &stmt) = 0;
   virtual ~StmtVisitor() = default;
 };

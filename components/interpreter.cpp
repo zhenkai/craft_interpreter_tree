@@ -143,6 +143,14 @@ StmtVisitorResT Interpreter::visitBlock(const Block &block) {
   return StmtVisitorResT();
 }
 
+StmtVisitorResT Interpreter::visitIfStmt(const IfStmt &stmt) {
+  if (isTruthy(eval(stmt.condition))) {
+    return execute(stmt.thenStmt);
+  } else if (stmt.elseStmt != nullptr) {
+    return execute(stmt.elseStmt);
+  }
+}
+
 void Interpreter::executeBlock(const Block &block,
                                std::unique_ptr<Environment> env) {
   std::unique_ptr<Environment> enclosing = std::move(env_);
@@ -162,7 +170,7 @@ void Interpreter::executeBlock(const Block &block,
 }
 
 StmtVisitorResT Interpreter::execute(const StmtPtr &stmt) {
-  stmt->accept(*this);
+  return stmt->accept(*this);
 }
 
 void Interpreter::interpret(const std::vector<StmtPtr> &stmts) {

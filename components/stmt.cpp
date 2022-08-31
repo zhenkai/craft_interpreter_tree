@@ -15,3 +15,7 @@ StmtVisitorResT VarDecl::accept(StmtVisitor &visitor) const {
 StmtVisitorResT Block::accept(StmtVisitor &visitor) const {
   return visitor.visitBlock(*this);
 }
+
+StmtVisitorResT IfStmt::accept(StmtVisitor &visitor) const {
+  return visitor.visitIfStmt(*this);
+}
