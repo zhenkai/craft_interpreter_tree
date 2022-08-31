@@ -162,6 +162,13 @@ StmtVisitorResT Interpreter::visitIfStmt(const IfStmt &stmt) {
   }
 }
 
+StmtVisitorResT Interpreter::visitWhileStmt(const WhileStmt &stmt) {
+  while (isTruthy(eval(stmt.condition))) {
+    execute(stmt.stmt);
+  }
+  return StmtVisitorResT();
+}
+
 void Interpreter::executeBlock(const Block &block,
                                std::unique_ptr<Environment> env) {
   std::unique_ptr<Environment> enclosing = std::move(env_);

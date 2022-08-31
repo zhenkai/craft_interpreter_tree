@@ -21,6 +21,7 @@ public:
   StmtVisitorResT visitVarDecl(const VarDecl &stmt) override;
   StmtVisitorResT visitBlock(const Block &block) override;
   StmtVisitorResT visitIfStmt(const IfStmt &stmt) override;
+  StmtVisitorResT visitWhileStmt(const WhileStmt &stmt) override;
   void interpret(const std::vector<StmtPtr> &stmts);
 
 private:

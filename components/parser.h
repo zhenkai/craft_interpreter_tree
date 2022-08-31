@@ -36,10 +36,13 @@ varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
 statement      → exprStmt
                | ifStmt
                | printStmt
+               | whileStmt
                | block ;
 
 ifStmt         → "if" "(" expression ")" statement
                ( "else" statement )? ;
+
+whileStmt      → "while" "(" expression ")" statement ;
 
 block          → "{" declaration* "}" ;
 ***/
@@ -54,6 +57,7 @@ private:
   StmtPtr declaration();
   StmtPtr statement();
   StmtPtr ifStatement();
+  StmtPtr whileStatement();
   StmtPtr printStatement();
   StmtPtr expressionStatement();
   StmtPtr varStatement();

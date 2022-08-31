@@ -19,3 +19,7 @@ StmtVisitorResT Block::accept(StmtVisitor &visitor) const {
 StmtVisitorResT IfStmt::accept(StmtVisitor &visitor) const {
   return visitor.visitIfStmt(*this);
 }
+
+StmtVisitorResT WhileStmt::accept(StmtVisitor &visitor) const {
+  return visitor.visitWhileStmt(*this);
+}

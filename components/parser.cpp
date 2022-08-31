@@ -197,11 +197,14 @@ StmtPtr Parser::declaration() {
     return nullptr;
   }
 }
+
 StmtPtr Parser::statement() {
   if (match({TokenType::IF}))
     return ifStatement();
   if (match({TokenType::PRINT}))
     return printStatement();
+  if (match({TokenType::WHILE}))
+    return whileStatement();
   if (match({TokenType::LEFT_BRACE}))
     return block();
 
@@ -220,6 +223,15 @@ StmtPtr Parser::ifStatement() {
 
   return std::make_unique<IfStmt>(std::move(condition), std::move(thenStmt),
                                   std::move(elseStmt));
+}
+
+StmtPtr Parser::whileStatement() {
+  consume(TokenType::LEFT_PAREN, "Expect '(' after while.");
+  auto condition = expression();
+  consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
+  auto stmt = statement();
+
+  return std::make_unique<WhileStmt>(std::move(condition), std::move(stmt));
 }
 
 StmtPtr Parser::printStatement() {

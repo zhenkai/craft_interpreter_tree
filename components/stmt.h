@@ -73,6 +73,18 @@ public:
 
 using IfStmtPtr = std::unique_ptr<IfStmt>;
 
+class WhileStmt : public Stmt {
+public:
+  WhileStmt(ExprPtr condition, StmtPtr stmt)
+      : condition(std::move(condition)), stmt(std::move(stmt)) {}
+  StmtVisitorResT accept(StmtVisitor &visitor) const override;
+
+  const ExprPtr condition;
+  const StmtPtr stmt;
+};
+
+using WhileStmtPtr = std::unique_ptr<WhileStmt>;
+
 class StmtVisitor {
 public:
   virtual StmtVisitorResT visitExpressionStmt(const ExpressionStmt &stmt) = 0;
@@ -80,5 +92,6 @@ public:
   virtual StmtVisitorResT visitVarDecl(const VarDecl &stmt) = 0;
   virtual StmtVisitorResT visitBlock(const Block &block) = 0;
   virtual StmtVisitorResT visitIfStmt(const IfStmt &stmt) = 0;
+  virtual StmtVisitorResT visitWhileStmt(const WhileStmt &stmt) = 0;
   virtual ~StmtVisitor() = default;
 };
