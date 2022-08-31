@@ -23,6 +23,7 @@ void Environment::assign(const Token &name, const std::any &value) {
   }
   if (enclosing_ != nullptr) {
     enclosing_->assign(name, value);
+    return;
   }
   throw new RuntimeError("[Line " + std::to_string(name.line) +
                          "] Undefined variable : " + name.lexeme);
