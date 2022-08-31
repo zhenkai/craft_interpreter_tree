@@ -180,7 +180,7 @@ StmtPtr Parser::expressionStatement() {
 StmtPtr Parser::varStatement() {
   Token name = consume(TokenType::IDENTIFIER, "Expect variable name.");
   ExprPtr initializer = nullptr;
-  if (match(TokenType::EQUAL)) {
+  if (match({TokenType::EQUAL})) {
       initializer = expression();
   }
   consume(TokenType::SEMICOLON, "Expect ';' after expression.");

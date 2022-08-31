@@ -88,6 +88,10 @@ ExprVisitorResT Interpreter::visitUnaryExpr(const Unary& expr) {
   throw new RuntimeError(expr.op.errorStr() + " unsupported unary operator");
 }
 
+ExprVisitorResT Interpreter::visitVariableExpr(const Variable& expr) {
+  return env_.get(expr.name);
+}
+
 ExprVisitorResT Interpreter::eval(const ExprPtr& expr) {
   return expr->accept(*this);
 }
@@ -104,6 +108,15 @@ StmtVisitorResT Interpreter::visitPrintStmt(const PrintStmt& stmt) {
 
 StmtVisitorResT Interpreter::visitExpressionStmt(const ExpressionStmt& stmt) {
   eval(stmt.expr);
+  return StmtVisitorResT();
+}
+
+StmtVisitorResT Interpreter::visitVarStmt(const VarStmt& stmt) {
+  std::any value;
+  if (stmt.expr != nullptr) {
+    value = eval(stmt.expr);
+  }
+  env_.define(stmt.name.lexeme, std::move(value));
   return StmtVisitorResT();
 }
 

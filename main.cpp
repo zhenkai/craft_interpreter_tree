@@ -12,6 +12,7 @@
 
 namespace {
   static BasicErrorReporter ERROR_REPORTER;
+  Interpreter ip(ERROR_REPORTER);
 
   void run(const std::string& source) {
     Scanner scanner(source, ERROR_REPORTER);
@@ -24,7 +25,6 @@ namespace {
       return;
     }
 
-    Interpreter ip(ERROR_REPORTER);
     ip.interpret(stmts);
   }
   

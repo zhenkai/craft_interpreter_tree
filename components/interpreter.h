@@ -3,10 +3,11 @@
 #include "expr.h"
 #include "error.h"
 #include "stmt.h"
+#include "env.h"
 
 class Interpreter: public ExprVisitor, StmtVisitor {
 public:
-  Interpreter(ErrorReporter& errorReporter): errorReporter_(errorReporter) {}
+  Interpreter(ErrorReporter& errorReporter): errorReporter_(errorReporter), env_({}) {}
   ExprVisitorResT visitBinaryExpr(const Binary& expr) override;
   ExprVisitorResT visitGroupingExpr(const Grouping& expr) override;
   ExprVisitorResT visitLiteralExpr(const Literal& expr) override;
@@ -21,4 +22,5 @@ private:
   ExprVisitorResT eval(const Expr& expr);
   StmtVisitorResT execute(const StmtPtr& stmt);
   ErrorReporter& errorReporter_;
+  Environment env_;
 };

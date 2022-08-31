@@ -43,7 +43,7 @@ public:
 
   const Token name;
   const ExprPtr expr;
-}
+};
 
 class StmtVisitor {
 public:
