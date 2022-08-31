@@ -1,6 +1,6 @@
 #include <any>
 #include <string>
 
-std::string anyToStr(const std::any& a);
+std::string anyToStr(const std::any &a);
 
-bool anyEqual(const std::any& a, const std::any& b);
+bool anyEqual(const std::any &a, const std::any &b);

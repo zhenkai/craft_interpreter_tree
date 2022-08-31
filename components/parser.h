@@ -1,11 +1,11 @@
 #pragma once
 
-#include <vector>
-#include <exception>
-#include "token.h"
 #include "error.h"
 #include "expr.h"
 #include "stmt.h"
+#include "token.h"
+#include <exception>
+#include <vector>
 
 class ParseError : public std::exception {};
 
@@ -33,14 +33,16 @@ varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
 
 statement      → exprStmt
                | printStmt
-               | block ; 
+               | block ;
 block          → "{" declaration* "}" ;
 ***/
 class Parser {
 public:
-  Parser(const std::vector<const Token>& tokens, ErrorReporter& errorReporter ): tokens_(tokens), current_(0), errorReporter_(errorReporter) {}
-  //ExprPtr parse();
+  Parser(const std::vector<const Token> &tokens, ErrorReporter &errorReporter)
+      : tokens_(tokens), current_(0), errorReporter_(errorReporter) {}
+  // ExprPtr parse();
   std::vector<StmtPtr> parse();
+
 private:
   StmtPtr declaration();
   StmtPtr statement();
@@ -49,15 +51,13 @@ private:
   StmtPtr varStatement();
   StmtPtr block();
   // ----------------------------------
-  bool match(const std::vector<TokenType>&& types); 
+  bool match(const std::vector<TokenType> &&types);
 
-  Token peek() { return tokens_[current_];}
+  Token peek() { return tokens_[current_]; }
 
-  Token previous() { return tokens_[current_-1]; }
+  Token previous() { return tokens_[current_ - 1]; }
 
-  bool isAtEnd() {
-    return peek().type == TokenType::EOF_;
-  }
+  bool isAtEnd() { return peek().type == TokenType::EOF_; }
 
   Token advance() {
     if (!isAtEnd()) {
@@ -82,11 +82,11 @@ private:
   ExprPtr factor();
   ExprPtr unary();
   ExprPtr primary();
-  Token consume(const TokenType type, const std::string& msg);
-  ParseError* error(const Token& token, const std::string& msg);
+  Token consume(const TokenType type, const std::string &msg);
+  ParseError *error(const Token &token, const std::string &msg);
   void synchronize();
   // ----------------------------
-  const std::vector<const Token>& tokens_;
-  ErrorReporter& errorReporter_;
+  const std::vector<const Token> &tokens_;
+  ErrorReporter &errorReporter_;
   int current_;
 };

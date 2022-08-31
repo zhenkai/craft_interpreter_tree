@@ -1,10 +1,10 @@
 #include "token.h"
 #include "../utils/any_util.h"
-#include <unordered_map>
 #include <sstream>
+#include <unordered_map>
 
 namespace {
-static const std::unordered_map<TokenType, std::string> tokenNames {
+static const std::unordered_map<TokenType, std::string> tokenNames{
     {TokenType::LEFT_PAREN, "("},
     {TokenType::RIGHT_PAREN, ")"},
     {TokenType::LEFT_BRACE, "{TokenType::"},
@@ -47,13 +47,14 @@ static const std::unordered_map<TokenType, std::string> tokenNames {
 
 std::string Token::str() const {
   std::stringstream s;
-  s << "Token type: " << tokenNames.at(type) << ", lexeme: " << lexeme << ", literal: ";
+  s << "Token type: " << tokenNames.at(type) << ", lexeme: " << lexeme
+    << ", literal: ";
   s << anyToStr(literal);
   return s.str();
 }
 
 std::string Token::errorStr() const {
   std::stringstream s;
-  s << "Line " << line << ", operator '" <<  tokenNames.at(type) << "'";
+  s << "Line " << line << ", operator '" << tokenNames.at(type) << "'";
   return s.str();
 }

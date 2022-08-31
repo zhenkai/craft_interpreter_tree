@@ -2,9 +2,7 @@
 #include "expr.h"
 #include <iostream>
 
-ExprPtr Parser::expression() {
-  return assignment();
-}
+ExprPtr Parser::expression() { return assignment(); }
 
 ExprPtr Parser::assignment() {
   ExprPtr expr = equality();
@@ -12,7 +10,7 @@ ExprPtr Parser::assignment() {
   if (match({TokenType::EQUAL})) {
     Token equals = previous();
     ExprPtr value = assignment();
-    if (Variable* v = dynamic_cast<Variable*>(expr.get())) {
+    if (Variable *v = dynamic_cast<Variable *>(expr.get())) {
       return std::make_unique<Assignment>(v->name, std::move(value));
     }
     errorReporter_.report(equals.line, " = ", "Invalid assignment target.");
@@ -33,20 +31,21 @@ ExprPtr Parser::equality() {
   return expr;
 }
 
-bool Parser::match(const std::vector<TokenType>&& types) {
-  for (const auto& type : types) {
+bool Parser::match(const std::vector<TokenType> &&types) {
+  for (const auto &type : types) {
     if (check(type)) {
       advance();
       return true;
     }
   }
-  
+
   return false;
 }
 
 ExprPtr Parser::comparison() {
   ExprPtr expr = term();
-  while (match({TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS, TokenType::LESS_EQUAL})) {
+  while (match({TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS,
+                TokenType::LESS_EQUAL})) {
     Token op = previous();
     ExprPtr right = term();
     expr = std::make_unique<Binary>(std::move(expr), op, std::move(right));
@@ -115,7 +114,7 @@ ExprPtr Parser::primary() {
   throw error(previous(), "Expect expression.");
 }
 
-Token Parser::consume(const TokenType type, const std::string& msg) {
+Token Parser::consume(const TokenType type, const std::string &msg) {
   if (check(type)) {
     return advance();
   }
@@ -123,7 +122,7 @@ Token Parser::consume(const TokenType type, const std::string& msg) {
   throw error(peek(), msg);
 }
 
-ParseError* Parser::error(const Token& token, const std::string& msg) {
+ParseError *Parser::error(const Token &token, const std::string &msg) {
   if (token.type == TokenType::EOF_) {
     errorReporter_.report(token.line, " at end", msg);
   } else {
@@ -137,46 +136,50 @@ void Parser::synchronize() {
   advance();
 
   while (!isAtEnd()) {
-    if (previous().type == TokenType::SEMICOLON) return;
+    if (previous().type == TokenType::SEMICOLON)
+      return;
 
     switch (peek().type) {
-      case TokenType::CLASS:
-      case TokenType::FUN:
-      case TokenType::VAR:
-      case TokenType::FOR:
-      case TokenType::IF:
-      case TokenType::WHILE:
-      case TokenType::PRINT:
-      case TokenType::RETURN:
-        return;
-      default:
-        break;
+    case TokenType::CLASS:
+    case TokenType::FUN:
+    case TokenType::VAR:
+    case TokenType::FOR:
+    case TokenType::IF:
+    case TokenType::WHILE:
+    case TokenType::PRINT:
+    case TokenType::RETURN:
+      return;
+    default:
+      break;
     }
 
     advance();
   }
 }
 
-//ExprPtr Parser::parse() {
-//  try {
-//    return expression();
-//  } catch (ParseError* pe) {
-//    return nullptr;
-//  }
-//}
+// ExprPtr Parser::parse() {
+//   try {
+//     return expression();
+//   } catch (ParseError* pe) {
+//     return nullptr;
+//   }
+// }
 StmtPtr Parser::declaration() {
   try {
-    if(match({TokenType::VAR})) return varStatement();
+    if (match({TokenType::VAR}))
+      return varStatement();
 
     return statement();
-  } catch (ParseError* pe) {
+  } catch (ParseError *pe) {
     synchronize();
     return nullptr;
   }
 }
 StmtPtr Parser::statement() {
-  if (match({TokenType::PRINT})) return printStatement();
-  if (match({TokenType::LEFT_BRACE})) return block();
+  if (match({TokenType::PRINT}))
+    return printStatement();
+  if (match({TokenType::LEFT_BRACE}))
+    return block();
 
   return expressionStatement();
 }
@@ -207,7 +210,7 @@ StmtPtr Parser::varStatement() {
   Token name = consume(TokenType::IDENTIFIER, "Expect variable name.");
   ExprPtr initializer = nullptr;
   if (match({TokenType::EQUAL})) {
-      initializer = expression();
+    initializer = expression();
   }
   consume(TokenType::SEMICOLON, "Expect ';' after expression.");
   return std::make_unique<VarDecl>(name, std::move(initializer));
@@ -215,7 +218,7 @@ StmtPtr Parser::varStatement() {
 
 std::vector<StmtPtr> Parser::parse() {
   std::vector<StmtPtr> stmts;
-  while(!isAtEnd()) {
+  while (!isAtEnd()) {
     stmts.push_back(declaration());
   }
   return stmts;
