@@ -199,6 +199,9 @@ StmtPtr Parser::declaration() {
 }
 
 StmtPtr Parser::statement() {
+  if (match({TokenType::FOR})) {
+    return forStatement();
+  }
   if (match({TokenType::IF}))
     return ifStatement();
   if (match({TokenType::PRINT}))
@@ -223,6 +226,52 @@ StmtPtr Parser::ifStatement() {
 
   return std::make_unique<IfStmt>(std::move(condition), std::move(thenStmt),
                                   std::move(elseStmt));
+}
+
+StmtPtr Parser::forStatement() {
+  consume(TokenType::LEFT_PAREN, "Expect '(' after 'for'.");
+  StmtPtr initializer = nullptr;
+  if (match({TokenType::SEMICOLON})) {
+    // do nothing 
+  } else if (match({TokenType::VAR})) {
+    initializer = declaration();
+  } else {
+    initializer = expressionStatement();
+  }
+
+  ExprPtr condition = nullptr;
+  if (!check(TokenType::SEMICOLON)) {
+    condition = expression();
+  }
+  consume(TokenType::SEMICOLON, "Expect ';' after loop condition.");
+
+  ExprPtr increment = nullptr;
+  if (!check(TokenType::SEMICOLON)) {
+    increment = expression();
+  }
+  consume(TokenType::SEMICOLON, "Expect ';' after loop condition.");
+
+  StmtPtr body = statement();
+
+  if (increment != nullptr) {
+    std::vector<StmtPtr> stmts;
+    stmts.push_back(std::move(body));
+    stmts.push_back(std::make_unique<ExpressionStmt>(std::move(increment)));
+    body = std::make_unique<Block>(std::move(stmts));
+  }
+
+  if (condition == nullptr) condition = std::make_unique<Literal>(true);
+
+  body = std::make_unique<WhileStmt>(std::move(condition), std::move(body));
+ 
+  if (initializer != nullptr) {
+    std::vector<StmtPtr> stmts;
+    stmts.push_back(std::move(initializer));
+    stmts.push_back(std::move(body));
+    body = std::make_unique<Block>(std::move(stmts));
+  } 
+
+  return body;
 }
 
 StmtPtr Parser::whileStatement() {
