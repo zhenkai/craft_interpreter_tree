@@ -23,6 +23,9 @@ void checkNumbers(const Token& op, const std::any& left, const std::any& right) 
 }
 
 }
+
+Interpreter::Interpreter(ErrorReporter& errorReporter): errorReporter_(errorReporter), env_(std::make_unique<Environment>()) {}
+
 ExprVisitorResT Interpreter::visitBinaryExpr(const Binary& expr) {
   auto left = eval(expr.left);
   auto right = eval(expr.right);
@@ -89,12 +92,12 @@ ExprVisitorResT Interpreter::visitUnaryExpr(const Unary& expr) {
 }
 
 ExprVisitorResT Interpreter::visitVariableExpr(const Variable& expr) {
-  return env_.get(expr.name);
+  return env_->get(expr.name);
 }
 
 ExprVisitorResT Interpreter::visitAssignmentExpr(const Assignment& expr) {
   auto value = eval(expr.value);
-  env_.assign(expr.name, value);
+  env_->assign(expr.name, value);
   return value;
 }
 
@@ -122,8 +125,30 @@ StmtVisitorResT Interpreter::visitVarDecl(const VarDecl& stmt) {
   if (stmt.initializer != nullptr) {
     value = eval(stmt.initializer);
   }
-  env_.define(stmt.name.lexeme, std::move(value));
+  env_->define(stmt.name.lexeme, std::move(value));
   return StmtVisitorResT();
+}
+
+StmtVisitorResT Interpreter::visitBlock(const Block& block) {
+  executeBlock(block, std::make_unique<Environment>(env_.get()));
+  return StmtVisitorResT();
+}
+
+void Interpreter::executeBlock(const Block& block, std::unique_ptr<Environment> env) {
+  std::unique_ptr<Environment> enclosing = std::move(env_);
+ 
+  env_ = std::move(env);
+
+  // with poor man's scope guard 
+  try {
+    for (const auto& stmt : block.stmts) {
+      execute(stmt);
+    }
+  } catch (...) {
+    env_ = std::move(enclosing);
+    throw;
+  }
+  env_ = std::move(enclosing);
 }
 
 StmtVisitorResT Interpreter::execute(const StmtPtr& stmt) {

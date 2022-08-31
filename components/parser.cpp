@@ -176,6 +176,7 @@ StmtPtr Parser::declaration() {
 }
 StmtPtr Parser::statement() {
   if (match({TokenType::PRINT})) return printStatement();
+  if (match({TokenType::LEFT_BRACE})) return block();
 
   return expressionStatement();
 }
@@ -184,6 +185,16 @@ StmtPtr Parser::printStatement() {
   ExprPtr value = expression();
   consume(TokenType::SEMICOLON, "Expect ';' after value.");
   return std::make_unique<PrintStmt>(std::move(value));
+}
+
+StmtPtr Parser::block() {
+  std::vector<StmtPtr> stmts;
+  while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
+    stmts.push_back(declaration());
+  }
+  consume(TokenType::RIGHT_BRACE, "Expect '}' at the end of a block.");
+
+  return std::make_unique<Block>(std::move(stmts));
 }
 
 StmtPtr Parser::expressionStatement() {

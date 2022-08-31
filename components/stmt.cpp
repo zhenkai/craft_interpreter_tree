@@ -11,3 +11,7 @@ StmtVisitorResT PrintStmt::accept(StmtVisitor& visitor) const {
 StmtVisitorResT VarDecl::accept(StmtVisitor& visitor) const {
   return visitor.visitVarDecl(*this);
 }
+
+StmtVisitorResT Block::accept(StmtVisitor& visitor) const {
+  return visitor.visitBlock(*this);
+}

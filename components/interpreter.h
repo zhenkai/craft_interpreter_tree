@@ -4,10 +4,11 @@
 #include "error.h"
 #include "stmt.h"
 #include "env.h"
+#include <memory>
 
 class Interpreter: public ExprVisitor, StmtVisitor {
 public:
-  Interpreter(ErrorReporter& errorReporter): errorReporter_(errorReporter), env_({}) {}
+  explicit Interpreter(ErrorReporter& errorReporter);
   ExprVisitorResT visitBinaryExpr(const Binary& expr) override;
   ExprVisitorResT visitGroupingExpr(const Grouping& expr) override;
   ExprVisitorResT visitLiteralExpr(const Literal& expr) override;
@@ -17,11 +18,13 @@ public:
   StmtVisitorResT visitPrintStmt(const PrintStmt& stmt) override;
   StmtVisitorResT visitExpressionStmt(const ExpressionStmt& stmt) override;
   StmtVisitorResT visitVarDecl(const VarDecl& stmt) override;
+  StmtVisitorResT visitBlock(const Block& block) override;
   void interpret(const std::vector<StmtPtr>& stmts);
 private:
   ExprVisitorResT eval(const ExprPtr& expr);
   ExprVisitorResT eval(const Expr& expr);
   StmtVisitorResT execute(const StmtPtr& stmt);
+  void executeBlock(const Block& block, std::unique_ptr<Environment> env);
   ErrorReporter& errorReporter_;
-  Environment env_;
+  std::unique_ptr<Environment> env_;
 };

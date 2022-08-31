@@ -3,6 +3,7 @@
 #include "expr.h"
 #include "token.h"
 #include <memory>
+#include <vector>
 
 using StmtVisitorResT = void;
 
@@ -45,10 +46,22 @@ public:
   const ExprPtr initializer;
 };
 
+using VarDeclPtr = std::unique_ptr<VarDecl>;
+
+class Block: public Stmt {
+public:
+  Block(std::vector<StmtPtr> stmts): stmts(std::move(stmts)) {}
+  StmtVisitorResT accept(StmtVisitor& visitor) const override;
+
+  const std::vector<StmtPtr> stmts;
+};
+
+
 class StmtVisitor {
 public:
   virtual StmtVisitorResT visitExpressionStmt(const ExpressionStmt& stmt) = 0;
   virtual StmtVisitorResT visitPrintStmt(const PrintStmt& stmt) = 0;
   virtual StmtVisitorResT visitVarDecl(const VarDecl& stmt) = 0;
+  virtual StmtVisitorResT visitBlock(const Block& block) = 0;
   virtual ~StmtVisitor()=default;
 };

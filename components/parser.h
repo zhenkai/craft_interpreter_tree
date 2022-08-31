@@ -47,6 +47,7 @@ private:
   StmtPtr printStatement();
   StmtPtr expressionStatement();
   StmtPtr varStatement();
+  StmtPtr block();
   // ----------------------------------
   bool match(const std::vector<TokenType>&& types); 
 
