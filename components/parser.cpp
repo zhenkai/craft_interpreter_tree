@@ -199,7 +199,7 @@ StmtPtr Parser::varStatement() {
       initializer = expression();
   }
   consume(TokenType::SEMICOLON, "Expect ';' after expression.");
-  return std::make_unique<VarStmt>(name, std::move(initializer));
+  return std::make_unique<VarDecl>(name, std::move(initializer));
 }
 
 std::vector<StmtPtr> Parser::parse() {

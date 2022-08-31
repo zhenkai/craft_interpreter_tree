@@ -36,19 +36,19 @@ public:
 
 using PrintStmtPtr = std::unique_ptr<PrintStmt>;
 
-class VarStmt: public Stmt {
+class VarDecl: public Stmt {
 public:
-  VarStmt(const Token& name, ExprPtr expr): name(name), expr(std::move(expr)) {}
+  VarDecl(const Token& name, ExprPtr expr): name(name), initializer(std::move(expr)) {}
   StmtVisitorResT accept(StmtVisitor& visitor) const override;
 
   const Token name;
-  const ExprPtr expr;
+  const ExprPtr initializer;
 };
 
 class StmtVisitor {
 public:
   virtual StmtVisitorResT visitExpressionStmt(const ExpressionStmt& stmt) = 0;
   virtual StmtVisitorResT visitPrintStmt(const PrintStmt& stmt) = 0;
-  virtual StmtVisitorResT visitVarStmt(const VarStmt& stmt) = 0;
+  virtual StmtVisitorResT visitVarDecl(const VarDecl& stmt) = 0;
   virtual ~StmtVisitor()=default;
 };

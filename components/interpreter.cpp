@@ -117,10 +117,10 @@ StmtVisitorResT Interpreter::visitExpressionStmt(const ExpressionStmt& stmt) {
   return StmtVisitorResT();
 }
 
-StmtVisitorResT Interpreter::visitVarStmt(const VarStmt& stmt) {
+StmtVisitorResT Interpreter::visitVarDecl(const VarDecl& stmt) {
   std::any value;
-  if (stmt.expr != nullptr) {
-    value = eval(stmt.expr);
+  if (stmt.initializer != nullptr) {
+    value = eval(stmt.initializer);
   }
   env_.define(stmt.name.lexeme, std::move(value));
   return StmtVisitorResT();
