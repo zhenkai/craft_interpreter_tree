@@ -24,6 +24,7 @@ public:
   StmtVisitorResT visitIfStmt(const IfStmt &stmt) override;
   StmtVisitorResT visitWhileStmt(const WhileStmt &stmt) override;
   StmtVisitorResT visitFunStmt(const FunStmt &stmt) override;
+  StmtVisitorResT visitReturnStmt(const ReturnStmt &stmt) override;
   void interpret(const std::vector<StmtPtr> &stmts);
   void executeBlock(const std::vector<StmtPtr> &block, EnvPtr env);
   EnvPtr globalEnv() { return globalEnv_; }
@@ -35,4 +36,12 @@ private:
   ErrorReporter &errorReporter_;
   EnvPtr globalEnv_;
   EnvPtr env_;
+};
+
+class Return : public std::runtime_error {
+public:
+  Return(std::any value)
+      : std::runtime_error("hack"), value(std::move(value)) {}
+
+  const std::any value;
 };

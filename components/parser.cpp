@@ -262,12 +262,25 @@ StmtPtr Parser::statement() {
     return ifStatement();
   if (match({TokenType::PRINT}))
     return printStatement();
+  if (match({TokenType::RETURN}))
+    return returnStatement();
   if (match({TokenType::WHILE}))
     return whileStatement();
   if (match({TokenType::LEFT_BRACE}))
     return std::make_unique<Block>(block());
 
   return expressionStatement();
+}
+
+StmtPtr Parser::returnStatement() {
+  Token keyword = previous();
+  ExprPtr value = nullptr;
+  if (!check(TokenType::SEMICOLON)) {
+    value = expression();
+  }
+
+  consume(TokenType::SEMICOLON, "Expect ';' after return value.");
+  return std::make_unique<ReturnStmt>(keyword, std::move(value));
 }
 
 StmtPtr Parser::ifStatement() {

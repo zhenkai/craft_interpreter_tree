@@ -27,3 +27,7 @@ StmtVisitorResT WhileStmt::accept(StmtVisitor &visitor) const {
 StmtVisitorResT FunStmt::accept(StmtVisitor &visitor) const {
   return visitor.visitFunStmt(*this);
 }
+
+StmtVisitorResT ReturnStmt::accept(StmtVisitor &visitor) const {
+  return visitor.visitReturnStmt(*this);
+}

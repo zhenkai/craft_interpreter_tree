@@ -10,8 +10,11 @@ std::any LoxFunction::call(Interpreter &ip, const std::vector<std::any> &args) {
     auto name = funDecl.params[i].lexeme;
     env->define(name, args[i]);
   }
-
-  ip.executeBlock(funDecl.body, env);
+  try {
+    ip.executeBlock(funDecl.body, env);
+  } catch (Return *e) {
+    return e->value;
+  }
   return std::any();
 }
 

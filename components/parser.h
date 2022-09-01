@@ -43,8 +43,11 @@ statement      → exprStmt
                | forStmt
                | ifStmt
                | printStmt
+               | returnStmt
                | whileStmt
                | block ;
+
+returnStmt     → "return" expression? ";" ;
 
 forStmt        → "for" "(" ( varDecl | exprStmt | ";" )
                  expression? ";"
@@ -74,6 +77,7 @@ private:
   StmtPtr printStatement();
   StmtPtr expressionStatement();
   StmtPtr varStatement();
+  StmtPtr returnStatement();
   std::vector<StmtPtr> block();
   // ----------------------------------
   bool match(const std::vector<TokenType> &&types);

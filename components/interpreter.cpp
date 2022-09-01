@@ -178,6 +178,14 @@ StmtVisitorResT Interpreter::visitPrintStmt(const PrintStmt &stmt) {
   return StmtVisitorResT();
 }
 
+StmtVisitorResT Interpreter::visitReturnStmt(const ReturnStmt &stmt) {
+  std::any value;
+  if (stmt.value != nullptr) {
+    value = eval(stmt.value);
+  }
+  throw new Return(std::move(value));
+}
+
 StmtVisitorResT Interpreter::visitExpressionStmt(const ExpressionStmt &stmt) {
   eval(stmt.expr);
   return StmtVisitorResT();
