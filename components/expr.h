@@ -3,6 +3,7 @@
 #include "token.h"
 #include <any>
 #include <memory>
+#include <vector>
 
 using ExprVisitorResT = std::any;
 
@@ -80,7 +81,8 @@ using AssignmentPtr = std::unique_ptr<Assignment>;
 
 class Logical : public Expr {
 public:
-  Logical(const Token &op, ExprPtr left, ExprPtr right): op(op), left(std::move(left)), right(std::move(right)) {}
+  Logical(const Token &op, ExprPtr left, ExprPtr right)
+      : op(op), left(std::move(left)), right(std::move(right)) {}
   ExprVisitorResT accept(ExprVisitor &visitor) const override;
 
   const Token op;
@@ -89,6 +91,20 @@ public:
 };
 
 using LogicalPtr = std::unique_ptr<Logical>;
+
+class Call : public Expr {
+public:
+  Call(ExprPtr callee, const Token &paren, std::vector<ExprPtr> arguments)
+      : callee(std::move(callee)), paren(paren),
+        arguments(std::move(arguments)) {}
+  ExprVisitorResT accept(ExprVisitor &visitor) const override;
+
+  const ExprPtr callee;
+  const Token paren;
+  const std::vector<ExprPtr> arguments;
+};
+
+using CallPtr = std::unique_ptr<Call>;
 
 class ExprVisitor {
 public:
@@ -99,5 +115,6 @@ public:
   virtual ExprVisitorResT visitVariableExpr(const Variable &expr) = 0;
   virtual ExprVisitorResT visitAssignmentExpr(const Assignment &expr) = 0;
   virtual ExprVisitorResT visitLogicalExpr(const Logical &expr) = 0;
+  virtual ExprVisitorResT visitCallExpr(const Call &expr) = 0;
   virtual ~ExprVisitor() = default;
 };

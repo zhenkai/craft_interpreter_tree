@@ -1,5 +1,6 @@
 #include "interpreter.h"
 #include "../utils/any_util.h"
+#include "callable.h"
 #include "token.h"
 #include <iostream>
 #include <vector>
@@ -113,12 +114,38 @@ ExprVisitorResT Interpreter::visitAssignmentExpr(const Assignment &expr) {
 ExprVisitorResT Interpreter::visitLogicalExpr(const Logical &expr) {
   auto left = eval(expr.left);
   if (expr.op.type == TokenType::OR) {
-    if (isTruthy(left)) { return left;}
+    if (isTruthy(left)) {
+      return left;
+    }
   } else {
-    if (!isTruthy(left)) {return left;}
+    if (!isTruthy(left)) {
+      return left;
+    }
   }
 
   return eval(expr.right);
+}
+
+ExprVisitorResT Interpreter::visitCallExpr(const Call &expr) {
+  auto callee = eval(expr.callee);
+
+  std::vector<std::any> arguments;
+  for (const auto &argument : expr.arguments) {
+    arguments.push_back(eval(argument));
+  }
+
+  if (callee.type() != typeid(CallablePtr)) {
+    throw new RuntimeError(expr.paren.errorStr() +
+                           "Can only call functions and classes.");
+  }
+  auto function = std::any_cast<CallablePtr>(callee);
+  if (arguments.size() != function->arity()) {
+    throw new RuntimeError(expr.paren.errorStr() + "Expected " +
+                           std::to_string(function->arity()) +
+                           " arguments but got " +
+                           std::to_string(arguments.size()) + ".");
+  }
+  return function->call(*this, arguments);
 }
 
 ExprVisitorResT Interpreter::eval(const ExprPtr &expr) {

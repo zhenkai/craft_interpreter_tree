@@ -40,7 +40,6 @@ ExprPtr Parser::andExpr() {
   return expr;
 }
 
-
 ExprPtr Parser::equality() {
   ExprPtr expr = comparison();
 
@@ -103,7 +102,35 @@ ExprPtr Parser::unary() {
     return std::make_unique<Unary>(op, std::move(right));
   }
 
-  return primary();
+  return call();
+}
+
+ExprPtr Parser::call() {
+  ExprPtr expr = primary();
+  while (true) {
+    if (match({TokenType::LEFT_PAREN})) {
+      expr = finishCall(std::move(expr));
+    } else {
+      break;
+    }
+  }
+  return expr;
+}
+
+ExprPtr Parser::finishCall(ExprPtr expr) {
+  std::vector<ExprPtr> args;
+  if (!check(TokenType::RIGHT_PAREN)) {
+    do {
+      if (args.size() >= 255) {
+        error(peek(), "Can't have more than 255 arguments.");
+      }
+      args.push_back(expression());
+    } while (match({TokenType::COMMA}));
+  }
+
+  Token paren = consume(TokenType::RIGHT_PAREN, "Expect ')' after arguments.");
+
+  return std::make_unique<Call>(std::move(expr), paren, std::move(args));
 }
 
 ExprPtr Parser::primary() {
@@ -232,7 +259,7 @@ StmtPtr Parser::forStatement() {
   consume(TokenType::LEFT_PAREN, "Expect '(' after 'for'.");
   StmtPtr initializer = nullptr;
   if (match({TokenType::SEMICOLON})) {
-    // do nothing 
+    // do nothing
   } else if (match({TokenType::VAR})) {
     initializer = varStatement();
   } else {
@@ -260,16 +287,17 @@ StmtPtr Parser::forStatement() {
     body = std::make_unique<Block>(std::move(stmts));
   }
 
-  if (condition == nullptr) condition = std::make_unique<Literal>(true);
+  if (condition == nullptr)
+    condition = std::make_unique<Literal>(true);
 
   body = std::make_unique<WhileStmt>(std::move(condition), std::move(body));
- 
+
   if (initializer != nullptr) {
     std::vector<StmtPtr> stmts;
     stmts.push_back(std::move(initializer));
     stmts.push_back(std::move(body));
     body = std::make_unique<Block>(std::move(stmts));
-  } 
+  }
 
   return body;
 }

@@ -19,8 +19,9 @@ equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term           → factor ( ( "-" | "+" ) factor )* ;
 factor         → unary ( ( "/" | "*" ) unary )* ;
-unary          → ( "!" | "-" ) unary
-               | primary ;
+unary          → ( "!" | "-" ) unary | call ;
+call           → primary ( "(" arguments? ")" )* ;
+arguments      → expression ( "," expression )* ;
 primary        → NUMBER | STRING | "true" | "false" | "nil"
                | "(" expression ")" ;
                | IDENTIFIER ;
@@ -102,6 +103,8 @@ private:
   ExprPtr primary();
   ExprPtr orExpr();
   ExprPtr andExpr();
+  ExprPtr call();
+  ExprPtr finishCall(ExprPtr expr);
   Token consume(const TokenType type, const std::string &msg);
   ParseError *error(const Token &token, const std::string &msg);
   void synchronize();
