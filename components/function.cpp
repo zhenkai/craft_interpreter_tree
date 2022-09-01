@@ -15,4 +15,7 @@ std::any LoxFunction::call(Interpreter &ip, const std::vector<std::any> &args) {
   return std::any();
 }
 
-int LoxFunction::arity() const { return funDecl.params.size(); }
+std::string LoxFunction::str() {
+  return "func name: " + funDecl.name.lexeme +
+         ", arity: " + std::to_string(arity());
+}

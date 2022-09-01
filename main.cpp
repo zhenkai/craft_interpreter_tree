@@ -3,6 +3,7 @@
 #include "components/interpreter.h"
 #include "components/parser.h"
 #include "components/scanner.h"
+#include "components/stmt.h"
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -13,7 +14,16 @@ namespace {
 static BasicErrorReporter ERROR_REPORTER;
 Interpreter ip(ERROR_REPORTER);
 
-void run(const std::string &source) {
+// HACK
+// We need to keep the statements parsed in the REPL because
+// some of the statements (e.g. functions, classes) would be
+// needed later. We can't have them destroyed when "run"
+// returns.
+// If we don't track, nasty bugs happen (we keep a reference to
+// stmts in functions now).
+static auto stmtTracker = std::make_unique<std::vector<StmtPtr>>();
+
+void run(const std::string &source, bool trackStmt) {
   Scanner scanner(source, ERROR_REPORTER);
   auto tokens = scanner.scanTokens();
   Parser parser(tokens, ERROR_REPORTER);
@@ -25,13 +35,18 @@ void run(const std::string &source) {
   }
 
   ip.interpret(stmts);
+  if (trackStmt) {
+    for (auto &&stmt : stmts) {
+      stmtTracker->push_back(std::move(stmt));
+    }
+  }
 }
 
 void runFile(const std::string &path) {
   std::ifstream t(path);
   std::stringstream buffer;
   buffer << t.rdbuf();
-  run(buffer.str());
+  run(buffer.str(), false);
   if (ERROR_REPORTER.hadError()) {
     exit(65);
   }
@@ -46,7 +61,7 @@ void runPrompt() {
     std::string line;
     std::getline(std::cin, line);
     try {
-      run(line);
+      run(line, true);
     } catch (std::invalid_argument *e) {
       std::cout << "invalid_argument: " << e->what() << std::endl;
     }

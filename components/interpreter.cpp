@@ -140,20 +140,24 @@ ExprVisitorResT Interpreter::visitCallExpr(const Call &expr) {
     arguments.push_back(eval(argument));
   }
 
-  /* using any together with shared_ptr makes this tricky
-  if (callee.type() != typeid(CallablePtr)) {
+  // using any together with shared_ptr makes this tricky
+  CallablePtr fun = nullptr;
+  if (callee.type() == typeid(std::shared_ptr<LoxFunction>)) {
+    fun = std::any_cast<std::shared_ptr<LoxFunction>>(callee);
+  } else if (callee.type() == typeid(std::shared_ptr<LoxClock>)) {
+    fun = std::any_cast<std::shared_ptr<LoxClock>>(callee);
+  }
+  if (fun == nullptr) {
     throw new RuntimeError(expr.paren.errorStr() +
                            " Can only call functions and classes.");
   }
-  */
-  auto function = std::any_cast<std::shared_ptr<LoxClock>>(callee);
-  if (arguments.size() != function->arity()) {
-    throw new RuntimeError(expr.paren.errorStr() + " Expected " +
-                           std::to_string(function->arity()) +
-                           " arguments but got " +
-                           std::to_string(arguments.size()) + ".");
+
+  if (arguments.size() != fun->arity()) {
+    throw new RuntimeError(
+        expr.paren.errorStr() + " Expected " + std::to_string(fun->arity()) +
+        " arguments but got " + std::to_string(arguments.size()) + ".");
   }
-  return function->call(*this, arguments);
+  return fun->call(*this, arguments);
 }
 
 ExprVisitorResT Interpreter::eval(const ExprPtr &expr) {
