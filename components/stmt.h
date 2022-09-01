@@ -85,6 +85,20 @@ public:
 
 using WhileStmtPtr = std::unique_ptr<WhileStmt>;
 
+class FunStmt : public Stmt {
+public:
+  FunStmt(const Token &name, std::vector<Token> params,
+          std::vector<StmtPtr> body)
+      : name(name), params(std::move(params)), body(std::move(body)) {}
+  StmtVisitorResT accept(StmtVisitor &visitor) const override;
+
+  const Token name;
+  const std::vector<Token> params;
+  const std::vector<StmtPtr> body;
+};
+
+using FunStmtPtr = std::unique_ptr<FunStmt>;
+
 class StmtVisitor {
 public:
   virtual StmtVisitorResT visitExpressionStmt(const ExpressionStmt &stmt) = 0;
@@ -93,5 +107,6 @@ public:
   virtual StmtVisitorResT visitBlock(const Block &block) = 0;
   virtual StmtVisitorResT visitIfStmt(const IfStmt &stmt) = 0;
   virtual StmtVisitorResT visitWhileStmt(const WhileStmt &stmt) = 0;
+  virtual StmtVisitorResT visitFunStmt(const FunStmt &stmt) = 0;
   virtual ~StmtVisitor() = default;
 };

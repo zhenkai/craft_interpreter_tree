@@ -2,6 +2,10 @@
 #include "expr.h"
 #include <iostream>
 
+namespace {
+const int MAX_PARAM_OR_ARG_NUM = 255;
+}
+
 ExprPtr Parser::expression() { return assignment(); }
 
 ExprPtr Parser::assignment() {
@@ -121,8 +125,9 @@ ExprPtr Parser::finishCall(ExprPtr expr) {
   std::vector<ExprPtr> args;
   if (!check(TokenType::RIGHT_PAREN)) {
     do {
-      if (args.size() >= 255) {
-        error(peek(), "Can't have more than 255 arguments.");
+      if (args.size() >= MAX_PARAM_OR_ARG_NUM) {
+        error(peek(), "Can't have more than " +
+                          std::to_string(MAX_PARAM_OR_ARG_NUM) + " arguments.");
       }
       args.push_back(expression());
     } while (match({TokenType::COMMA}));
@@ -215,6 +220,8 @@ void Parser::synchronize() {
 // }
 StmtPtr Parser::declaration() {
   try {
+    if (match({TokenType::FUN}))
+      return funStatement("function");
     if (match({TokenType::VAR}))
       return varStatement();
 
@@ -223,6 +230,28 @@ StmtPtr Parser::declaration() {
     synchronize();
     return nullptr;
   }
+}
+
+StmtPtr Parser::funStatement(const std::string &kind) {
+  Token name = consume(TokenType::IDENTIFIER, "Expect " + kind + " name.");
+  consume(TokenType::LEFT_PAREN, "Expect '(' after " + kind + " name.");
+  std::vector<Token> params;
+  if (!check(TokenType::RIGHT_PAREN)) {
+    do {
+      if (params.size() >= MAX_PARAM_OR_ARG_NUM) {
+        error(peek(), "Can't have more than " +
+                          std::to_string(MAX_PARAM_OR_ARG_NUM) +
+                          " parameters.");
+      }
+
+      params.push_back(
+          consume(TokenType::IDENTIFIER, "Expect parameter name."));
+    } while (match({TokenType::COMMA}));
+  }
+  consume(TokenType::RIGHT_PAREN, "Expect ')' after parameters.");
+  consume(TokenType::LEFT_BRACE, "Expect '{' before " + kind + " body.");
+  auto body = block();
+  return std::make_unique<FunStmt>(name, std::move(params), std::move(body));
 }
 
 StmtPtr Parser::statement() {
@@ -236,7 +265,7 @@ StmtPtr Parser::statement() {
   if (match({TokenType::WHILE}))
     return whileStatement();
   if (match({TokenType::LEFT_BRACE}))
-    return block();
+    return std::make_unique<Block>(block());
 
   return expressionStatement();
 }
@@ -317,14 +346,14 @@ StmtPtr Parser::printStatement() {
   return std::make_unique<PrintStmt>(std::move(value));
 }
 
-StmtPtr Parser::block() {
+std::vector<StmtPtr> Parser::block() {
   std::vector<StmtPtr> stmts;
   while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
     stmts.push_back(declaration());
   }
   consume(TokenType::RIGHT_BRACE, "Expect '}' at the end of a block.");
 
-  return std::make_unique<Block>(std::move(stmts));
+  return stmts;
 }
 
 StmtPtr Parser::expressionStatement() {
