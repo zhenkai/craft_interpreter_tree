@@ -246,10 +246,10 @@ StmtPtr Parser::forStatement() {
   consume(TokenType::SEMICOLON, "Expect ';' after loop condition.");
 
   ExprPtr increment = nullptr;
-  if (!check(TokenType::SEMICOLON)) {
+  if (!check(TokenType::RIGHT_PAREN)) {
     increment = expression();
   }
-  consume(TokenType::SEMICOLON, "Expect ';' after loop condition.");
+  consume(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
 
   StmtPtr body = statement();
 
