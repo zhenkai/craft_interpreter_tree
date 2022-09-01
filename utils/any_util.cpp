@@ -1,6 +1,8 @@
 #include "any_util.h"
+#include "../components/function.h"
 #include <cmath>
 #include <limits>
+#include <memory>
 #include <sstream>
 
 std::string anyToStr(const std::any &a) {
@@ -16,6 +18,8 @@ std::string anyToStr(const std::any &a) {
       s << std::any_cast<float>(a);
     } else if (a.type() == typeid(bool)) {
       s << (std::any_cast<bool>(a) ? "true" : "false");
+    } else if (a.type() == typeid(std::shared_ptr<LoxFunction>)) {
+      s << std::any_cast<std::shared_ptr<LoxFunction>>(a)->str() << std::endl;
     } else {
       throw new std::invalid_argument(a.type().name());
     }

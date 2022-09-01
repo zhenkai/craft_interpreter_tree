@@ -170,7 +170,11 @@ ExprVisitorResT Interpreter::eval(const Expr &expr) {
 
 StmtVisitorResT Interpreter::visitPrintStmt(const PrintStmt &stmt) {
   auto value = eval(stmt.expr);
-  std::cout << anyToStr(value) << std::endl;
+  try {
+    std::cout << anyToStr(value) << std::endl;
+  } catch (std::exception *e) {
+    std::cout << "Cannot print: unsupported type " << e->what() << std::endl;
+  }
   return StmtVisitorResT();
 }
 
