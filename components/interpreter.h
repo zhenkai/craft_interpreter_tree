@@ -29,7 +29,7 @@ private:
   ExprVisitorResT eval(const ExprPtr &expr);
   ExprVisitorResT eval(const Expr &expr);
   StmtVisitorResT execute(const StmtPtr &stmt);
-  void executeBlock(const Block &block, std::unique_ptr<Environment> env);
+  void executeBlock(const Block &block, EnvPtr env);
   ErrorReporter &errorReporter_;
-  std::unique_ptr<Environment> env_;
+  EnvPtr env_;
 };

@@ -1,10 +1,14 @@
 #include "token.h"
 #include <any>
+#include <memory>
 #include <unordered_map>
+
+class Environment;
+using EnvPtr = std::shared_ptr<Environment>;
 
 class Environment {
 public:
-  Environment(Environment *enclosing = nullptr)
+  Environment(EnvPtr enclosing = nullptr)
       : enclosing_(enclosing), values_({}) {}
   void define(const std::string &name, std::any value) {
     values_[name] = std::move(value);
@@ -13,6 +17,6 @@ public:
   std::any get(const Token &token) const;
 
 private:
-  Environment *enclosing_;
+  EnvPtr enclosing_;
   std::unordered_map<std::string, std::any> values_;
 };

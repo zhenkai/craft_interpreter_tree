@@ -31,7 +31,7 @@ void checkNumbers(const Token &op, const std::any &left,
 } // namespace
 
 Interpreter::Interpreter(ErrorReporter &errorReporter)
-    : errorReporter_(errorReporter), env_(std::make_unique<Environment>()) {}
+    : errorReporter_(errorReporter), env_(std::make_shared<Environment>()) {}
 
 ExprVisitorResT Interpreter::visitBinaryExpr(const Binary &expr) {
   auto left = eval(expr.left);
@@ -177,7 +177,7 @@ StmtVisitorResT Interpreter::visitVarDecl(const VarDecl &stmt) {
 }
 
 StmtVisitorResT Interpreter::visitBlock(const Block &block) {
-  executeBlock(block, std::make_unique<Environment>(env_.get()));
+  executeBlock(block, std::make_shared<Environment>(env_));
   return StmtVisitorResT();
 }
 
@@ -196,11 +196,10 @@ StmtVisitorResT Interpreter::visitWhileStmt(const WhileStmt &stmt) {
   return StmtVisitorResT();
 }
 
-void Interpreter::executeBlock(const Block &block,
-                               std::unique_ptr<Environment> env) {
-  std::unique_ptr<Environment> enclosing = std::move(env_);
+void Interpreter::executeBlock(const Block &block, EnvPtr env) {
+  EnvPtr enclosing = env_;
 
-  env_ = std::move(env);
+  env_ = env;
 
   // with poor man's scope guard
   try {
@@ -208,10 +207,10 @@ void Interpreter::executeBlock(const Block &block,
       execute(stmt);
     }
   } catch (...) {
-    env_ = std::move(enclosing);
+    env_ = enclosing;
     throw;
   }
-  env_ = std::move(enclosing);
+  env_ = enclosing;
 }
 
 StmtVisitorResT Interpreter::execute(const StmtPtr &stmt) {
