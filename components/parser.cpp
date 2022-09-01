@@ -234,7 +234,7 @@ StmtPtr Parser::forStatement() {
   if (match({TokenType::SEMICOLON})) {
     // do nothing 
   } else if (match({TokenType::VAR})) {
-    initializer = declaration();
+    initializer = varStatement();
   } else {
     initializer = expressionStatement();
   }
