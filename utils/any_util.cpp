@@ -17,7 +17,7 @@ std::string anyToStr(const std::any &a) {
     } else if (a.type() == typeid(bool)) {
       s << (std::any_cast<bool>(a) ? "true" : "false");
     } else {
-      throw new std::invalid_argument("unsupported literal type");
+      throw new std::invalid_argument(a.type().name());
     }
     return s.str();
   }

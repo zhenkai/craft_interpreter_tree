@@ -1,6 +1,8 @@
 #include "interpreter.h"
 #include "../utils/any_util.h"
 #include "callable.h"
+#include "function.h"
+#include "native.h"
 #include "token.h"
 #include <iostream>
 #include <vector>
@@ -31,7 +33,11 @@ void checkNumbers(const Token &op, const std::any &left,
 } // namespace
 
 Interpreter::Interpreter(ErrorReporter &errorReporter)
-    : errorReporter_(errorReporter), env_(std::make_shared<Environment>()) {}
+    : errorReporter_(errorReporter),
+      globalEnv_(std::make_shared<Environment>()), env_(globalEnv_) {
+  // add native functions to global env
+  globalEnv_->define("clock", std::make_shared<LoxClock>());
+}
 
 ExprVisitorResT Interpreter::visitBinaryExpr(const Binary &expr) {
   auto left = eval(expr.left);
@@ -134,13 +140,15 @@ ExprVisitorResT Interpreter::visitCallExpr(const Call &expr) {
     arguments.push_back(eval(argument));
   }
 
+  /* using any together with shared_ptr makes this tricky
   if (callee.type() != typeid(CallablePtr)) {
     throw new RuntimeError(expr.paren.errorStr() +
-                           "Can only call functions and classes.");
+                           " Can only call functions and classes.");
   }
-  auto function = std::any_cast<CallablePtr>(callee);
+  */
+  auto function = std::any_cast<std::shared_ptr<LoxClock>>(callee);
   if (arguments.size() != function->arity()) {
-    throw new RuntimeError(expr.paren.errorStr() + "Expected " +
+    throw new RuntimeError(expr.paren.errorStr() + " Expected " +
                            std::to_string(function->arity()) +
                            " arguments but got " +
                            std::to_string(arguments.size()) + ".");
@@ -177,7 +185,7 @@ StmtVisitorResT Interpreter::visitVarDecl(const VarDecl &stmt) {
 }
 
 StmtVisitorResT Interpreter::visitBlock(const Block &block) {
-  executeBlock(block, std::make_shared<Environment>(env_));
+  executeBlock(block.stmts, std::make_shared<Environment>(env_));
   return StmtVisitorResT();
 }
 
@@ -196,14 +204,20 @@ StmtVisitorResT Interpreter::visitWhileStmt(const WhileStmt &stmt) {
   return StmtVisitorResT();
 }
 
-void Interpreter::executeBlock(const Block &block, EnvPtr env) {
+StmtVisitorResT Interpreter::visitFunStmt(const FunStmt &stmt) {
+  auto fun = std::make_shared<LoxFunction>(stmt);
+  env_->define(stmt.name.lexeme, fun);
+  return StmtVisitorResT();
+}
+
+void Interpreter::executeBlock(const std::vector<StmtPtr> &block, EnvPtr env) {
   EnvPtr enclosing = env_;
 
   env_ = env;
 
   // with poor man's scope guard
   try {
-    for (const auto &stmt : block.stmts) {
+    for (const auto &stmt : block) {
       execute(stmt);
     }
   } catch (...) {

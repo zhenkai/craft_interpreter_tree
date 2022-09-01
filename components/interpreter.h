@@ -23,13 +23,16 @@ public:
   StmtVisitorResT visitBlock(const Block &block) override;
   StmtVisitorResT visitIfStmt(const IfStmt &stmt) override;
   StmtVisitorResT visitWhileStmt(const WhileStmt &stmt) override;
+  StmtVisitorResT visitFunStmt(const FunStmt &stmt) override;
   void interpret(const std::vector<StmtPtr> &stmts);
+  void executeBlock(const std::vector<StmtPtr> &block, EnvPtr env);
+  EnvPtr globalEnv() { return globalEnv_; }
 
 private:
   ExprVisitorResT eval(const ExprPtr &expr);
   ExprVisitorResT eval(const Expr &expr);
   StmtVisitorResT execute(const StmtPtr &stmt);
-  void executeBlock(const Block &block, EnvPtr env);
   ErrorReporter &errorReporter_;
+  EnvPtr globalEnv_;
   EnvPtr env_;
 };

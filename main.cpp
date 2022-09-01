@@ -45,7 +45,11 @@ void runPrompt() {
     std::cout << "> ";
     std::string line;
     std::getline(std::cin, line);
-    run(line);
+    try {
+      run(line);
+    } catch (std::invalid_argument *e) {
+      std::cout << "invalid_argument: " << e->what() << std::endl;
+    }
     ERROR_REPORTER.reset();
   }
 }
