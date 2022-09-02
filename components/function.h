@@ -3,6 +3,7 @@
 #include "callable.h"
 #include "env.h"
 #include "stmt.h"
+#include <memory>
 #include <string>
 
 class LoxFunction : public Callable {
@@ -18,3 +19,5 @@ private:
   const int arity_;
   EnvPtr closure_;
 };
+
+using FunPtr = std::shared_ptr<LoxFunction>;

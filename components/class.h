@@ -11,3 +11,5 @@ public:
   int arity() const { return 0; }
   const std::string name;
 };
+
+using ClassPtr = std::shared_ptr<LoxClass>;

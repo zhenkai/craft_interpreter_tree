@@ -25,6 +25,7 @@ public:
   ExprVisitorResT visitAssignmentExpr(const Assignment &expr) override;
   ExprVisitorResT visitLogicalExpr(const Logical &expr) override;
   ExprVisitorResT visitCallExpr(const Call &expr) override;
+  ExprVisitorResT visitGetExpr(const Get &expr) override;
   StmtVisitorResT visitPrintStmt(const PrintStmt &stmt) override;
   StmtVisitorResT visitExpressionStmt(const ExpressionStmt &stmt) override;
   StmtVisitorResT visitVarDecl(const VarDecl &stmt) override;

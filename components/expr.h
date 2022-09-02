@@ -106,6 +106,18 @@ public:
 
 using CallPtr = std::unique_ptr<Call>;
 
+class Get : public Expr {
+public:
+  Get(ExprPtr object, const Token &name)
+      : object(std::move(object)), name(name) {}
+  ExprVisitorResT accept(ExprVisitor &visitor) const override;
+
+  const ExprPtr object;
+  const Token name;
+};
+
+using GetPtr = std::unique_ptr<Get>;
+
 class ExprVisitor {
 public:
   virtual ExprVisitorResT visitBinaryExpr(const Binary &expr) = 0;
@@ -116,5 +128,6 @@ public:
   virtual ExprVisitorResT visitAssignmentExpr(const Assignment &expr) = 0;
   virtual ExprVisitorResT visitLogicalExpr(const Logical &expr) = 0;
   virtual ExprVisitorResT visitCallExpr(const Call &expr) = 0;
+  virtual ExprVisitorResT visitGetExpr(const Get &expr) = 0;
   virtual ~ExprVisitor() = default;
 };

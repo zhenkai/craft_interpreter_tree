@@ -31,3 +31,7 @@ ExprVisitorResT Logical::accept(ExprVisitor &visitor) const {
 ExprVisitorResT Call::accept(ExprVisitor &visitor) const {
   return visitor.visitCallExpr(*this);
 }
+
+ExprVisitorResT Get::accept(ExprVisitor &visitor) const {
+  return visitor.visitGetExpr(*this);
+}

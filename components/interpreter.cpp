@@ -3,6 +3,7 @@
 #include "callable.h"
 #include "class.h"
 #include "function.h"
+#include "instance.h"
 #include "native.h"
 #include "token.h"
 #include <iostream>
@@ -159,10 +160,10 @@ ExprVisitorResT Interpreter::visitCallExpr(const Call &expr) {
 
   // using any together with shared_ptr makes this tricky
   CallablePtr fun = nullptr;
-  if (callee.type() == typeid(std::shared_ptr<LoxFunction>)) {
-    fun = std::any_cast<std::shared_ptr<LoxFunction>>(callee);
-  } else if (callee.type() == typeid(std::shared_ptr<LoxClass>)) {
-    fun = std::any_cast<std::shared_ptr<LoxClass>>(callee);
+  if (callee.type() == typeid(FunPtr)) {
+    fun = std::any_cast<FunPtr>(callee);
+  } else if (callee.type() == typeid(ClassPtr)) {
+    fun = std::any_cast<ClassPtr>(callee);
   } else if (callee.type() == typeid(std::shared_ptr<LoxClock>)) {
     fun = std::any_cast<std::shared_ptr<LoxClock>>(callee);
   }
@@ -177,6 +178,16 @@ ExprVisitorResT Interpreter::visitCallExpr(const Call &expr) {
         " arguments but got " + std::to_string(arguments.size()) + ".");
   }
   return fun->call(*this, arguments);
+}
+
+ExprVisitorResT Interpreter::visitGetExpr(const Get &expr) {
+  auto object = eval(expr.object);
+  if (object.type() != typeid(InstancePtr)) {
+    throw new RuntimeError(expr.name.errorStr() +
+                           " Only instances have properties.");
+  }
+  auto instance = std::any_cast<InstancePtr>(object);
+  return instance->get(expr.name);
 }
 
 ExprVisitorResT Interpreter::eval(const ExprPtr &expr) {

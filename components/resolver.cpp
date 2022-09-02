@@ -113,6 +113,11 @@ ExprVisitorResT Resolver::visitGroupingExpr(const Grouping &expr) {
   return ExprVisitorResT();
 }
 
+ExprVisitorResT Resolver::visitGetExpr(const Get &expr) {
+  resolve(expr.object);
+  return ExprVisitorResT();
+}
+
 ExprVisitorResT Resolver::visitLiteralExpr(const Literal &expr) {
   return ExprVisitorResT();
 }
