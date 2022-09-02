@@ -12,6 +12,7 @@
 using SymbolMap = std::unordered_map<std::string, bool>;
 
 enum class FunctionType { NONE, FUNCTION, METHOD };
+enum class ClassType { NONE, CLASS };
 
 class Interpreter;
 class Resolver : public ExprVisitor, public StmtVisitor {
@@ -27,6 +28,7 @@ public:
   ExprVisitorResT visitCallExpr(const Call &expr) override;
   ExprVisitorResT visitGetExpr(const Get &expr) override;
   ExprVisitorResT visitSetExpr(const Set &expr) override;
+  ExprVisitorResT visitThisExpr(const This &expr) override;
   StmtVisitorResT visitPrintStmt(const PrintStmt &stmt) override;
   StmtVisitorResT visitExpressionStmt(const ExpressionStmt &stmt) override;
   StmtVisitorResT visitVarDecl(const VarDecl &stmt) override;
@@ -54,4 +56,5 @@ private:
   ErrorReporter &errorReporter_;
   std::vector<SymbolMap> scopes_;
   FunctionType currentFunction_;
+  ClassType currentClass_;
 };

@@ -5,7 +5,7 @@
 #include <memory>
 #include <unordered_map>
 
-class LoxInstance {
+class LoxInstance : public std::enable_shared_from_this<LoxInstance> {
 public:
   explicit LoxInstance(LoxClass *klass)
       : klass_(klass), fields_(std::unordered_map<std::string, std::any>()) {}

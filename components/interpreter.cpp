@@ -119,6 +119,10 @@ ExprVisitorResT Interpreter::visitVariableExpr(const Variable &expr) {
   return lookUpVariable(expr.name, expr);
 }
 
+ExprVisitorResT Interpreter::visitThisExpr(const This &expr) {
+  return lookUpVariable(expr.keyword, expr);
+}
+
 std::any Interpreter::lookUpVariable(const Token &name, const Expr &expr) {
   if (locals_.find(id(expr)) != locals_.end()) {
     return env_->getAt(locals_.at(id(expr)), name.lexeme);

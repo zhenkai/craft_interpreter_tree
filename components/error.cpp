@@ -4,7 +4,8 @@
 
 void BasicErrorReporter::report(int line, const std::string &where,
                                 const std::string &msg) const {
-  std::cout << "[line " << line << "] Error " << where << ": " << msg;
+  std::cout << "[line " << line << "] Error " << where << ": " << msg
+            << std::endl;
   hadError_ = true;
 }
 

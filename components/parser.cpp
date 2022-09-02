@@ -160,6 +160,9 @@ ExprPtr Parser::primary() {
     return std::make_unique<Literal>(previous().literal);
   }
 
+  if (match({TokenType::THIS}))
+    return std::make_unique<This>(previous());
+
   if (match({TokenType::IDENTIFIER})) {
     return std::make_unique<Variable>(previous());
   }

@@ -6,12 +6,17 @@
 #include <memory>
 #include <string>
 
+class LoxFunction;
+class LoxInstance;
+using FunPtr = std::shared_ptr<LoxFunction>;
+
 class LoxFunction : public Callable {
 public:
   LoxFunction(const FunStmt &funDecl, EnvPtr closure)
       : funDecl(funDecl), arity_(funDecl.params.size()), closure_(closure) {}
   std::any call(Interpreter &ip, const std::vector<std::any> &args) override;
   int arity() const override { return arity_; }
+  FunPtr bind(std::shared_ptr<LoxInstance> inst);
   std::string str();
 
 private:
@@ -19,5 +24,3 @@ private:
   const int arity_;
   EnvPtr closure_;
 };
-
-using FunPtr = std::shared_ptr<LoxFunction>;

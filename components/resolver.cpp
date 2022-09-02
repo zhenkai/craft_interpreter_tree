@@ -3,7 +3,7 @@
 
 Resolver::Resolver(Interpreter &ip, ErrorReporter &errorReporter)
     : ip_(ip), errorReporter_(errorReporter), scopes_(std::vector<SymbolMap>()),
-      currentFunction_(FunctionType::NONE) {}
+      currentFunction_(FunctionType::NONE), currentClass_(ClassType::NONE) {}
 
 StmtVisitorResT Resolver::visitBlock(const Block &block) {
   beginScope();
@@ -48,12 +48,18 @@ StmtVisitorResT Resolver::visitFunStmt(const FunStmt &fun) {
 }
 
 StmtVisitorResT Resolver::visitClassStmt(const ClassStmt &c) {
+  ClassType enclosingClass = currentClass_;
+  currentClass_ = ClassType::CLASS;
   declare(c.name);
   define(c.name);
+  beginScope();
+  scopes_.back()["this"] = true;
   for (const auto &method : c.methods) {
     FunctionType decl = FunctionType::METHOD;
     resolveFun(*method, decl);
   }
+  endScope();
+  currentClass_ = enclosingClass;
   return StmtVisitorResT();
 }
 
@@ -125,6 +131,16 @@ ExprVisitorResT Resolver::visitGetExpr(const Get &expr) {
 ExprVisitorResT Resolver::visitSetExpr(const Set &expr) {
   resolve(expr.object);
   resolve(expr.value);
+  return ExprVisitorResT();
+}
+
+ExprVisitorResT Resolver::visitThisExpr(const This &expr) {
+  if (currentClass_ == ClassType::NONE) {
+    errorReporter_.report(expr.keyword.line,
+                          " Can't use 'this' outside of a class.");
+    return ExprVisitorResT();
+  }
+  resolveLocal(expr, expr.keyword);
   return ExprVisitorResT();
 }
 

@@ -8,7 +8,7 @@ std::any LoxInstance::get(const Token &name) {
 
   FunPtr method = klass_->findMethod(name.lexeme);
   if (method != nullptr) {
-    return method;
+    return method->bind(shared_from_this());
   }
 
   throw new RuntimeError(name.errorStr() + ". Undefined property '" +

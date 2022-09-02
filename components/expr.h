@@ -133,6 +133,16 @@ public:
 
 using SetPtr = std::unique_ptr<Set>;
 
+class This : public Expr {
+public:
+  This(const Token &keyword) : keyword(keyword) {}
+  ExprVisitorResT accept(ExprVisitor &visitor) const override;
+
+  const Token keyword;
+};
+
+using ThisPtr = std::unique_ptr<This>;
+
 class ExprVisitor {
 public:
   virtual ExprVisitorResT visitBinaryExpr(const Binary &expr) = 0;
@@ -145,5 +155,6 @@ public:
   virtual ExprVisitorResT visitCallExpr(const Call &expr) = 0;
   virtual ExprVisitorResT visitGetExpr(const Get &expr) = 0;
   virtual ExprVisitorResT visitSetExpr(const Set &expr) = 0;
+  virtual ExprVisitorResT visitThisExpr(const This &expr) = 0;
   virtual ~ExprVisitor() = default;
 };
