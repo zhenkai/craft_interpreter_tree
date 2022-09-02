@@ -7,6 +7,7 @@
 #include "native.h"
 #include "token.h"
 #include <iostream>
+#include <unordered_map>
 #include <vector>
 
 namespace {
@@ -272,7 +273,12 @@ StmtVisitorResT Interpreter::visitClassStmt(const ClassStmt &stmt) {
   // Two-stage variable binding process allows references to the class
   //  inside its own methods.
   env_->define(stmt.name.lexeme, nullptr);
-  auto klass = std::make_shared<LoxClass>(stmt.name.lexeme);
+  std::unordered_map<std::string, FunPtr> methods;
+  for (const auto &method : stmt.methods) {
+    FunPtr fun = std::make_shared<LoxFunction>(*method, env_);
+    methods[method->name.lexeme] = fun;
+  }
+  auto klass = std::make_shared<LoxClass>(stmt.name.lexeme, std::move(methods));
   env_->assign(stmt.name, klass);
   return StmtVisitorResT();
 }

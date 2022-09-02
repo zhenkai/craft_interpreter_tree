@@ -50,6 +50,10 @@ StmtVisitorResT Resolver::visitFunStmt(const FunStmt &fun) {
 StmtVisitorResT Resolver::visitClassStmt(const ClassStmt &c) {
   declare(c.name);
   define(c.name);
+  for (const auto &method : c.methods) {
+    FunctionType decl = FunctionType::METHOD;
+    resolveFun(*method, decl);
+  }
   return StmtVisitorResT();
 }
 

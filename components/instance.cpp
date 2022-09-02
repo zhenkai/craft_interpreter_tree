@@ -6,6 +6,11 @@ std::any LoxInstance::get(const Token &name) {
     return fields_.at(name.lexeme);
   }
 
+  FunPtr method = klass_->findMethod(name.lexeme);
+  if (method != nullptr) {
+    return method;
+  }
+
   throw new RuntimeError(name.errorStr() + ". Undefined property '" +
                          name.lexeme + "'.");
 }

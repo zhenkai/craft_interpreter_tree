@@ -13,7 +13,7 @@ public:
   void set(const Token &name, const std::any &value) {
     fields_[name.lexeme] = value;
   }
-  std::string str() { return klass_->name + " instance"; }
+  std::string str() { return klass_->name() + " instance"; }
 
 private:
   LoxClass *klass_;
