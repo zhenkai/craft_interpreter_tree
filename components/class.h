@@ -12,9 +12,9 @@ public:
       : name_(name), methods_(std::move(methods)) {}
   std::string str() { return name_; }
   std::any call(Interpreter &ip, const std::vector<std::any> &args);
-  int arity() const { return 0; }
+  int arity() const;
   std::string name() { return name_; }
-  FunPtr findMethod(const std::string &name);
+  FunPtr findMethod(const std::string &name) const;
 
 private:
   const std::string name_;
