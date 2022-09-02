@@ -1,8 +1,17 @@
-lox: main.o
-	clang++ *.o -o lox
+CC = clang++
+SRCS := $(shell find . -name '*.cpp')
+BUILD_DIR := ./build
+OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
+CXXFLAGS = -std=c++20
+TARGET = lox
 
-main.o: main.cpp components/*.cpp utils/*.cpp
-	clang++ -std=c++20 -c main.cpp components/*.cpp utils/*.cpp
+$(TARGET): $(OBJS)
+	$(CC) $(OBJS) -o $@ $(LDFLAGS)
 
+$(BUILD_DIR)/%.cpp.o: %.cpp
+	mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+.PHONY: clean
 clean: 
-	rm -f *.o lox
+	-rm -rf $(BUILD_DIR) $(TARGET)
