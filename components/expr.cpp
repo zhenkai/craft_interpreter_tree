@@ -35,3 +35,7 @@ ExprVisitorResT Call::accept(ExprVisitor &visitor) const {
 ExprVisitorResT Get::accept(ExprVisitor &visitor) const {
   return visitor.visitGetExpr(*this);
 }
+
+ExprVisitorResT Set::accept(ExprVisitor &visitor) const {
+  return visitor.visitSetExpr(*this);
+}

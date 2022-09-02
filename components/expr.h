@@ -112,11 +112,26 @@ public:
       : object(std::move(object)), name(name) {}
   ExprVisitorResT accept(ExprVisitor &visitor) const override;
 
-  const ExprPtr object;
+  // HACK: not const as we may need to move it to Set
+  // during parsing.
+  ExprPtr object;
   const Token name;
 };
 
 using GetPtr = std::unique_ptr<Get>;
+
+class Set : public Expr {
+public:
+  Set(ExprPtr object, const Token &name, ExprPtr value)
+      : object(std::move(object)), name(name), value(std::move(value)) {}
+  ExprVisitorResT accept(ExprVisitor &visitor) const override;
+
+  const ExprPtr object;
+  const Token name;
+  const ExprPtr value;
+};
+
+using SetPtr = std::unique_ptr<Set>;
 
 class ExprVisitor {
 public:
@@ -129,5 +144,6 @@ public:
   virtual ExprVisitorResT visitLogicalExpr(const Logical &expr) = 0;
   virtual ExprVisitorResT visitCallExpr(const Call &expr) = 0;
   virtual ExprVisitorResT visitGetExpr(const Get &expr) = 0;
+  virtual ExprVisitorResT visitSetExpr(const Set &expr) = 0;
   virtual ~ExprVisitor() = default;
 };

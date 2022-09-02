@@ -118,6 +118,12 @@ ExprVisitorResT Resolver::visitGetExpr(const Get &expr) {
   return ExprVisitorResT();
 }
 
+ExprVisitorResT Resolver::visitSetExpr(const Set &expr) {
+  resolve(expr.object);
+  resolve(expr.value);
+  return ExprVisitorResT();
+}
+
 ExprVisitorResT Resolver::visitLiteralExpr(const Literal &expr) {
   return ExprVisitorResT();
 }

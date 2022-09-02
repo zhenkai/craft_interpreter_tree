@@ -10,6 +10,9 @@ public:
   explicit LoxInstance(LoxClass *klass)
       : klass_(klass), fields_(std::unordered_map<std::string, std::any>()) {}
   std::any get(const Token &name);
+  void set(const Token &name, const std::any &value) {
+    fields_[name.lexeme] = value;
+  }
   std::string str() { return klass_->name + " instance"; }
 
 private:

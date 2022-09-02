@@ -16,6 +16,9 @@ ExprPtr Parser::assignment() {
     ExprPtr value = assignment();
     if (Variable *v = dynamic_cast<Variable *>(expr.get())) {
       return std::make_unique<Assignment>(v->name, std::move(value));
+    } else if (Get *g = dynamic_cast<Get *>(expr.get())) {
+      return std::make_unique<Set>(std::move(g->object), g->name,
+                                   std::move(value));
     }
     errorReporter_.report(equals.line, " = ", "Invalid assignment target.");
   }

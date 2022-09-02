@@ -190,6 +190,18 @@ ExprVisitorResT Interpreter::visitGetExpr(const Get &expr) {
   return instance->get(expr.name);
 }
 
+ExprVisitorResT Interpreter::visitSetExpr(const Set &expr) {
+  auto object = eval(expr.object);
+  if (object.type() != typeid(InstancePtr)) {
+    throw new RuntimeError(expr.name.errorStr() +
+                           " Only instances have properties.");
+  }
+  auto value = eval(expr.value);
+  auto instance = std::any_cast<InstancePtr>(object);
+  instance->set(expr.name, value);
+  return ExprVisitorResT();
+}
+
 ExprVisitorResT Interpreter::eval(const ExprPtr &expr) {
   return expr->accept(*this);
 }
