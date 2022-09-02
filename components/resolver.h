@@ -9,6 +9,8 @@
 // true: variable defined
 using SymbolMap = std::unordered_map<std::string, bool>;
 
+enum class FunctionType { NONE, FUNCTION };
+
 class Interpreter;
 class Resolver : public ExprVisitor, public StmtVisitor {
 public:
@@ -37,7 +39,7 @@ private:
   void resolve(const Expr &expr);
   void resolve(const ExprPtr &expr);
   void resolveLocal(const Expr &expr, const Token &name);
-  void resolveFun(const FunStmt &fun);
+  void resolveFun(const FunStmt &fun, FunctionType type);
   void beginScope();
   void endScope();
   void declare(const Token &name);
@@ -46,4 +48,5 @@ private:
   Interpreter &ip_;
   ErrorReporter &errorReporter_;
   std::vector<SymbolMap> scopes_;
+  FunctionType currentFunction_;
 };

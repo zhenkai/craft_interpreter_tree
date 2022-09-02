@@ -38,11 +38,11 @@ void run(const std::string &source, bool trackStmt) {
   Resolver resolver(ip, ERROR_REPORTER);
   resolver.resolve(stmts);
 
-  ip.interpret(stmts);
-
   if (ERROR_REPORTER.hadError()) {
     return;
   }
+
+  ip.interpret(stmts);
 
   if (trackStmt) {
     for (auto &&stmt : stmts) {

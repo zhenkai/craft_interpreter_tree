@@ -2,8 +2,8 @@
 #include "interpreter.h"
 
 Resolver::Resolver(Interpreter &ip, ErrorReporter &errorReporter)
-    : ip_(ip), errorReporter_(errorReporter),
-      scopes_(std::vector<SymbolMap>()) {}
+    : ip_(ip), errorReporter_(errorReporter), scopes_(std::vector<SymbolMap>()),
+      currentFunction_(FunctionType::NONE) {}
 
 StmtVisitorResT Resolver::visitBlock(const Block &block) {
   beginScope();
@@ -43,7 +43,7 @@ ExprVisitorResT Resolver::visitAssignmentExpr(const Assignment &expr) {
 StmtVisitorResT Resolver::visitFunStmt(const FunStmt &fun) {
   declare(fun.name);
   define(fun.name);
-  resolveFun(fun);
+  resolveFun(fun, FunctionType::FUNCTION);
   return StmtVisitorResT();
 }
 
@@ -72,6 +72,10 @@ StmtVisitorResT Resolver::visitWhileStmt(const WhileStmt &stmt) {
 }
 
 StmtVisitorResT Resolver::visitReturnStmt(const ReturnStmt &stmt) {
+  if (currentFunction_ == FunctionType::NONE) {
+    errorReporter_.report(stmt.keyword.line,
+                          "Can't return from top-level code.");
+  }
   if (stmt.value != nullptr) {
     resolve(stmt.value);
   }
@@ -112,7 +116,9 @@ ExprVisitorResT Resolver::visitUnaryExpr(const Unary &expr) {
   return ExprVisitorResT();
 }
 
-void Resolver::resolveFun(const FunStmt &fun) {
+void Resolver::resolveFun(const FunStmt &fun, FunctionType type) {
+  FunctionType enclosingFunction = currentFunction_;
+  currentFunction_ = type;
   beginScope();
   for (const auto &param : fun.params) {
     declare(param);
@@ -120,6 +126,7 @@ void Resolver::resolveFun(const FunStmt &fun) {
   }
   resolve(fun.body);
   endScope();
+  currentFunction_ = enclosingFunction;
 }
 
 void Resolver::beginScope() { scopes_.push_back(SymbolMap()); }
