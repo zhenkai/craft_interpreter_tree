@@ -221,7 +221,7 @@ StmtVisitorResT Interpreter::visitWhileStmt(const WhileStmt &stmt) {
 }
 
 StmtVisitorResT Interpreter::visitFunStmt(const FunStmt &stmt) {
-  auto fun = std::make_shared<LoxFunction>(stmt);
+  auto fun = std::make_shared<LoxFunction>(stmt, env_);
   env_->define(stmt.name.lexeme, fun);
   return StmtVisitorResT();
 }

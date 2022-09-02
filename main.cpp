@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
     runPrompt();
     break;
   case 2:
-    runFile(argv[0]);
+    runFile(argv[1]);
     break;
   default:
     std::cout << "Usage: lox [script]" << std::endl;

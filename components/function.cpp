@@ -5,7 +5,7 @@
 #include <memory>
 
 std::any LoxFunction::call(Interpreter &ip, const std::vector<std::any> &args) {
-  auto env = std::make_shared<Environment>(ip.globalEnv());
+  auto env = std::make_shared<Environment>(closure_);
   for (int i = 0; i < arity(); i++) {
     auto name = funDecl.params[i].lexeme;
     env->define(name, args[i]);
