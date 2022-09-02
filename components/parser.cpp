@@ -220,6 +220,8 @@ void Parser::synchronize() {
 // }
 StmtPtr Parser::declaration() {
   try {
+    if (match({TokenType::CLASS}))
+      return classDeclaration();
     if (match({TokenType::FUN}))
       return funStatement("function");
     if (match({TokenType::VAR}))
@@ -232,7 +234,21 @@ StmtPtr Parser::declaration() {
   }
 }
 
-StmtPtr Parser::funStatement(const std::string &kind) {
+StmtPtr Parser::classDeclaration() {
+  Token name = consume(TokenType::IDENTIFIER, "Expect class name.");
+  consume(TokenType::LEFT_BRACE, "Expect '{' before class body.");
+
+  std::vector<FunStmtPtr> methods;
+  while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
+    methods.push_back(funStatement("method"));
+  }
+
+  consume(TokenType::RIGHT_BRACE, "Expect '}' after class body.");
+
+  return std::make_unique<ClassStmt>(name, std::move(methods));
+}
+
+FunStmtPtr Parser::funStatement(const std::string &kind) {
   Token name = consume(TokenType::IDENTIFIER, "Expect " + kind + " name.");
   consume(TokenType::LEFT_PAREN, "Expect '(' after " + kind + " name.");
   std::vector<Token> params;

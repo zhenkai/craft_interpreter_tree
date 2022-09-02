@@ -31,6 +31,7 @@ public:
   StmtVisitorResT visitWhileStmt(const WhileStmt &stmt) override;
   StmtVisitorResT visitFunStmt(const FunStmt &stmt) override;
   StmtVisitorResT visitReturnStmt(const ReturnStmt &stmt) override;
+  StmtVisitorResT visitClassStmt(const ClassStmt &stmt) override;
   void resolve(const std::vector<StmtPtr> &stmts);
 
 private:

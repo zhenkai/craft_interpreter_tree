@@ -1,6 +1,7 @@
 #include "interpreter.h"
 #include "../utils/any_util.h"
 #include "callable.h"
+#include "class.h"
 #include "function.h"
 #include "native.h"
 #include "token.h"
@@ -239,6 +240,15 @@ StmtVisitorResT Interpreter::visitWhileStmt(const WhileStmt &stmt) {
 StmtVisitorResT Interpreter::visitFunStmt(const FunStmt &stmt) {
   auto fun = std::make_shared<LoxFunction>(stmt, env_);
   env_->define(stmt.name.lexeme, fun);
+  return StmtVisitorResT();
+}
+
+StmtVisitorResT Interpreter::visitClassStmt(const ClassStmt &stmt) {
+  // Two-stage variable binding process allows references to the class
+  //  inside its own methods.
+  env_->define(stmt.name.lexeme, nullptr);
+  auto klass = std::make_shared<LoxClass>(stmt.name.lexeme);
+  env_->assign(stmt.name, klass);
   return StmtVisitorResT();
 }
 

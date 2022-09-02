@@ -2,9 +2,9 @@
 #include "components/expr.h"
 #include "components/interpreter.h"
 #include "components/parser.h"
+#include "components/resolver.h"
 #include "components/scanner.h"
 #include "components/stmt.h"
-#include "components/resolver.h"
 #include <cstdlib>
 #include <fstream>
 #include <iostream>

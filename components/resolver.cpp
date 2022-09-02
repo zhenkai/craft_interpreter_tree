@@ -47,6 +47,12 @@ StmtVisitorResT Resolver::visitFunStmt(const FunStmt &fun) {
   return StmtVisitorResT();
 }
 
+StmtVisitorResT Resolver::visitClassStmt(const ClassStmt &c) {
+  declare(c.name);
+  define(c.name);
+  return StmtVisitorResT();
+}
+
 StmtVisitorResT Resolver::visitExpressionStmt(const ExpressionStmt &stmt) {
   resolve(stmt.expr);
   return StmtVisitorResT();
@@ -156,10 +162,10 @@ void Resolver::resolveLocal(const Expr &expr, const Token &name) {
 
 void Resolver::declare(const Token &name) {
   if (scopes_.size() > 0) {
-    auto& top = scopes_.back();
+    auto &top = scopes_.back();
     if (top.find(name.lexeme) != top.end()) {
       errorReporter_.report(name.line, name.lexeme,
-          "Already a variable with this name in this scope.");
+                            "Already a variable with this name in this scope.");
     }
     top[name.lexeme] = false;
   }

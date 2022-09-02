@@ -29,9 +29,12 @@ primary        → NUMBER | STRING | "true" | "false" | "nil"
 /*** Statement
 program        → declaration* EOF ;
 
-declaration    → funDecl
+declaration    → classDecl
+               | funDecl
                | varDecl
                | statement ;
+
+classDecl      → "class" IDENTIFIER "{" function* "}" ;
 
 funDecl        → "fun" function ;
 function       → IDENTIFIER "(" parameters? ")" block ;
@@ -73,11 +76,12 @@ private:
   StmtPtr ifStatement();
   StmtPtr forStatement();
   StmtPtr whileStatement();
-  StmtPtr funStatement(const std::string &name);
+  FunStmtPtr funStatement(const std::string &name);
   StmtPtr printStatement();
   StmtPtr expressionStatement();
   StmtPtr varStatement();
   StmtPtr returnStatement();
+  StmtPtr classDeclaration();
   std::vector<StmtPtr> block();
   // ----------------------------------
   bool match(const std::vector<TokenType> &&types);

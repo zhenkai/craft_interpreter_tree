@@ -31,3 +31,7 @@ StmtVisitorResT FunStmt::accept(StmtVisitor &visitor) const {
 StmtVisitorResT ReturnStmt::accept(StmtVisitor &visitor) const {
   return visitor.visitReturnStmt(*this);
 }
+
+StmtVisitorResT ClassStmt::accept(StmtVisitor &visitor) const {
+  return visitor.visitClassStmt(*this);
+}

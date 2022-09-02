@@ -28,6 +28,7 @@ public:
   StmtVisitorResT visitWhileStmt(const WhileStmt &stmt) override;
   StmtVisitorResT visitFunStmt(const FunStmt &stmt) override;
   StmtVisitorResT visitReturnStmt(const ReturnStmt &stmt) override;
+  StmtVisitorResT visitClassStmt(const ClassStmt &stmt) override;
   void interpret(const std::vector<StmtPtr> &stmts);
   void executeBlock(const std::vector<StmtPtr> &block, EnvPtr env);
   EnvPtr globalEnv() { return globalEnv_; }

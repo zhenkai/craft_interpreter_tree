@@ -111,6 +111,18 @@ public:
 
 using ReturnStmtPtr = std::unique_ptr<ReturnStmt>;
 
+class ClassStmt : public Stmt {
+public:
+  ClassStmt(const Token &name, std::vector<FunStmtPtr> methods)
+      : name(name), methods(std::move(methods)) {}
+  StmtVisitorResT accept(StmtVisitor &visitor) const override;
+
+  const Token name;
+  const std::vector<FunStmtPtr> methods;
+};
+
+using ClassStmtPtr = std::unique_ptr<ClassStmt>;
+
 class StmtVisitor {
 public:
   virtual StmtVisitorResT visitExpressionStmt(const ExpressionStmt &stmt) = 0;
@@ -121,5 +133,6 @@ public:
   virtual StmtVisitorResT visitWhileStmt(const WhileStmt &stmt) = 0;
   virtual StmtVisitorResT visitFunStmt(const FunStmt &stmt) = 0;
   virtual StmtVisitorResT visitReturnStmt(const ReturnStmt &stmt) = 0;
+  virtual StmtVisitorResT visitClassStmt(const ClassStmt &stmt) = 0;
   virtual ~StmtVisitor() = default;
 };
