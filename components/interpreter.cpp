@@ -8,6 +8,10 @@
 #include <vector>
 
 namespace {
+std::uintptr_t id(const Expr &expr) {
+  return reinterpret_cast<std::uintptr_t>(&expr);
+}
+
 bool isTruthy(std::any value) {
   // only Nil and false are false; everything else is true.
   if (!value.has_value())
@@ -34,7 +38,8 @@ void checkNumbers(const Token &op, const std::any &left,
 
 Interpreter::Interpreter(ErrorReporter &errorReporter)
     : errorReporter_(errorReporter),
-      globalEnv_(std::make_shared<Environment>()), env_(globalEnv_) {
+      globalEnv_(std::make_shared<Environment>()), env_(globalEnv_),
+      locals_(LocalMap()) {
   // add native functions to global env
   globalEnv_->define("clock", std::make_shared<LoxClock>());
 }
@@ -245,6 +250,10 @@ void Interpreter::executeBlock(const std::vector<StmtPtr> &block, EnvPtr env) {
 
 StmtVisitorResT Interpreter::execute(const StmtPtr &stmt) {
   return stmt->accept(*this);
+}
+
+void Interpreter::resolve(const Expr &expr, int depth) {
+  locals_[id(expr)] = depth;
 }
 
 void Interpreter::interpret(const std::vector<StmtPtr> &stmts) {

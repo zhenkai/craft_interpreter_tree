@@ -1,4 +1,5 @@
 #include "resolver.h"
+#include "interpreter.h"
 
 Resolver::Resolver(Interpreter &ip, ErrorReporter &errorReporter)
     : ip_(ip), errorReporter_(errorReporter),

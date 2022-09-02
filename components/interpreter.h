@@ -5,6 +5,9 @@
 #include "expr.h"
 #include "stmt.h"
 #include <memory>
+#include <unordered_map>
+
+using LocalMap = std::unordered_map<uintptr_t, int>;
 
 class Interpreter : public ExprVisitor, public StmtVisitor {
 public:
@@ -28,6 +31,7 @@ public:
   void interpret(const std::vector<StmtPtr> &stmts);
   void executeBlock(const std::vector<StmtPtr> &block, EnvPtr env);
   EnvPtr globalEnv() { return globalEnv_; }
+  void resolve(const Expr &expr, int depth);
 
 private:
   ExprVisitorResT eval(const ExprPtr &expr);
@@ -36,6 +40,7 @@ private:
   ErrorReporter &errorReporter_;
   EnvPtr globalEnv_;
   EnvPtr env_;
+  LocalMap locals_;
 };
 
 class Return : public std::runtime_error {
