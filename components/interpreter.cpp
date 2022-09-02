@@ -268,7 +268,7 @@ StmtVisitorResT Interpreter::visitWhileStmt(const WhileStmt &stmt) {
 }
 
 StmtVisitorResT Interpreter::visitFunStmt(const FunStmt &stmt) {
-  auto fun = std::make_shared<LoxFunction>(stmt, env_);
+  auto fun = std::make_shared<LoxFunction>(stmt, false, env_);
   env_->define(stmt.name.lexeme, fun);
   return StmtVisitorResT();
 }
@@ -279,7 +279,8 @@ StmtVisitorResT Interpreter::visitClassStmt(const ClassStmt &stmt) {
   env_->define(stmt.name.lexeme, nullptr);
   std::unordered_map<std::string, FunPtr> methods;
   for (const auto &method : stmt.methods) {
-    FunPtr fun = std::make_shared<LoxFunction>(*method, env_);
+    FunPtr fun = std::make_shared<LoxFunction>(
+        *method, method->name.lexeme == "init", env_);
     methods[method->name.lexeme] = fun;
   }
   auto klass = std::make_shared<LoxClass>(stmt.name.lexeme, std::move(methods));

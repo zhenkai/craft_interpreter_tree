@@ -16,6 +16,8 @@ std::any LoxFunction::call(Interpreter &ip, const std::vector<std::any> &args) {
   } catch (Return *e) {
     return e->value;
   }
+  if (isInitializer_)
+    return closure_->getAt(0, "this");
   return std::any();
 }
 
@@ -27,5 +29,5 @@ std::string LoxFunction::str() {
 FunPtr LoxFunction::bind(InstancePtr inst) {
   EnvPtr env = std::make_shared<Environment>(closure_);
   env->define("this", inst);
-  return std::make_shared<LoxFunction>(funDecl, env);
+  return std::make_shared<LoxFunction>(funDecl, isInitializer_, env);
 }
