@@ -29,9 +29,9 @@ public:
   StmtVisitorResT visitWhileStmt(const WhileStmt &stmt) override;
   StmtVisitorResT visitFunStmt(const FunStmt &stmt) override;
   StmtVisitorResT visitReturnStmt(const ReturnStmt &stmt) override;
+  void resolve(const std::vector<StmtPtr> &stmts);
 
 private:
-  void resolve(const std::vector<StmtPtr> &stmts);
   void resolve(const StmtPtr &stmt);
   void resolve(const Stmt &stmt);
   void resolve(const Expr &expr);

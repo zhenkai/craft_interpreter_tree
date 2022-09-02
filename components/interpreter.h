@@ -37,6 +37,7 @@ private:
   ExprVisitorResT eval(const ExprPtr &expr);
   ExprVisitorResT eval(const Expr &expr);
   StmtVisitorResT execute(const StmtPtr &stmt);
+  std::any lookUpVariable(const Token &name, const Expr &expr);
   ErrorReporter &errorReporter_;
   EnvPtr globalEnv_;
   EnvPtr env_;

@@ -113,12 +113,23 @@ ExprVisitorResT Interpreter::visitUnaryExpr(const Unary &expr) {
 }
 
 ExprVisitorResT Interpreter::visitVariableExpr(const Variable &expr) {
-  return env_->get(expr.name);
+  return lookUpVariable(expr.name, expr);
+}
+
+std::any Interpreter::lookUpVariable(const Token &name, const Expr &expr) {
+  if (locals_.find(id(expr)) != locals_.end()) {
+    return env_->getAt(locals_.at(id(expr)), name.lexeme);
+  }
+  return globalEnv_->get(name);
 }
 
 ExprVisitorResT Interpreter::visitAssignmentExpr(const Assignment &expr) {
   auto value = eval(expr.value);
-  env_->assign(expr.name, value);
+  if (locals_.find(id(expr)) != locals_.end()) {
+    env_->assignAt(locals_.at(id(expr)), expr.name, value);
+  } else {
+    globalEnv_->assign(expr.name, value);
+  }
   return value;
 }
 

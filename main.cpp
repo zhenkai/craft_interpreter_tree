@@ -4,6 +4,7 @@
 #include "components/parser.h"
 #include "components/scanner.h"
 #include "components/stmt.h"
+#include "components/resolver.h"
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -34,7 +35,15 @@ void run(const std::string &source, bool trackStmt) {
     return;
   }
 
+  Resolver resolver(ip, ERROR_REPORTER);
+  resolver.resolve(stmts);
+
   ip.interpret(stmts);
+
+  if (ERROR_REPORTER.hadError()) {
+    return;
+  }
+
   if (trackStmt) {
     for (auto &&stmt : stmts) {
       stmtTracker->push_back(std::move(stmt));

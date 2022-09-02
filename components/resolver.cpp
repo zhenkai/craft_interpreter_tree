@@ -149,7 +149,12 @@ void Resolver::resolveLocal(const Expr &expr, const Token &name) {
 
 void Resolver::declare(const Token &name) {
   if (scopes_.size() > 0) {
-    scopes_.back()[name.lexeme] = false;
+    auto& top = scopes_.back();
+    if (top.find(name.lexeme) != top.end()) {
+      errorReporter_.report(name.line, name.lexeme,
+          "Already a variable with this name in this scope.");
+    }
+    top[name.lexeme] = false;
   }
 }
 
