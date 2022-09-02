@@ -161,6 +161,8 @@ ExprVisitorResT Interpreter::visitCallExpr(const Call &expr) {
   CallablePtr fun = nullptr;
   if (callee.type() == typeid(std::shared_ptr<LoxFunction>)) {
     fun = std::any_cast<std::shared_ptr<LoxFunction>>(callee);
+  } else if (callee.type() == typeid(std::shared_ptr<LoxClass>)) {
+    fun = std::any_cast<std::shared_ptr<LoxClass>>(callee);
   } else if (callee.type() == typeid(std::shared_ptr<LoxClock>)) {
     fun = std::any_cast<std::shared_ptr<LoxClock>>(callee);
   }

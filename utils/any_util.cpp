@@ -1,6 +1,7 @@
 #include "any_util.h"
 #include "../components/class.h"
 #include "../components/function.h"
+#include "../components/instance.h"
 #include "../components/native.h"
 #include <cmath>
 #include <limits>
@@ -24,6 +25,8 @@ std::string anyToStr(const std::any &a) {
       s << std::any_cast<std::shared_ptr<LoxFunction>>(a)->str() << std::endl;
     } else if (a.type() == typeid(std::shared_ptr<LoxClass>)) {
       s << std::any_cast<std::shared_ptr<LoxClass>>(a)->str() << std::endl;
+    } else if (a.type() == typeid(std::shared_ptr<LoxInstance>)) {
+      s << std::any_cast<std::shared_ptr<LoxInstance>>(a)->str() << std::endl;
     } else if (a.type() == typeid(std::shared_ptr<LoxClock>)) {
       s << "<Native function: clock>" << std::endl;
     } else {

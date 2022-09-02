@@ -1,3 +1,5 @@
+#pragma once
+
 #include "error.h"
 #include "expr.h"
 #include "stmt.h"
