@@ -55,6 +55,7 @@ std::string Token::str() const {
 
 std::string Token::errorStr() const {
   std::stringstream s;
-  s << "Line " << line << ", operator '" << tokenNames.at(type) << "'";
+  s << "Line " << line << ", operator '" << tokenNames.at(type) << "' "
+    << lexeme;
   return s.str();
 }

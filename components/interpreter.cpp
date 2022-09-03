@@ -274,6 +274,15 @@ StmtVisitorResT Interpreter::visitFunStmt(const FunStmt &stmt) {
 }
 
 StmtVisitorResT Interpreter::visitClassStmt(const ClassStmt &stmt) {
+  ClassPtr superPtr = nullptr;
+  if (stmt.super != nullptr) {
+    auto superClass = eval(*stmt.super);
+    if (superClass.type() != typeid(ClassPtr)) {
+      throw new RuntimeError(stmt.super->name.errorStr() +
+                             " Superclass must be a class.");
+    }
+    superPtr = any_cast<ClassPtr>(superClass);
+  }
   // Two-stage variable binding process allows references to the class
   //  inside its own methods.
   env_->define(stmt.name.lexeme, nullptr);
@@ -283,7 +292,9 @@ StmtVisitorResT Interpreter::visitClassStmt(const ClassStmt &stmt) {
         *method, method->name.lexeme == "init", env_);
     methods[method->name.lexeme] = fun;
   }
-  auto klass = std::make_shared<LoxClass>(stmt.name.lexeme, std::move(methods));
+
+  auto klass = std::make_shared<LoxClass>(stmt.name.lexeme, superPtr,
+                                          std::move(methods));
   env_->assign(stmt.name, klass);
   return StmtVisitorResT();
 }

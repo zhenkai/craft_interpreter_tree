@@ -246,8 +246,14 @@ StmtPtr Parser::declaration() {
 
 StmtPtr Parser::classDeclaration() {
   Token name = consume(TokenType::IDENTIFIER, "Expect class name.");
-  consume(TokenType::LEFT_BRACE, "Expect '{' before class body.");
 
+  VariablePtr super = nullptr;
+  if (match({TokenType::LESS})) {
+    consume(TokenType::IDENTIFIER, "Expect superclass name.");
+    super = std::make_unique<Variable>(previous());
+  }
+
+  consume(TokenType::LEFT_BRACE, "Expect '{' before class body.");
   std::vector<FunStmtPtr> methods;
   while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
     methods.push_back(funStatement("method"));
@@ -255,7 +261,8 @@ StmtPtr Parser::classDeclaration() {
 
   consume(TokenType::RIGHT_BRACE, "Expect '}' after class body.");
 
-  return std::make_unique<ClassStmt>(name, std::move(methods));
+  return std::make_unique<ClassStmt>(name, std::move(super),
+                                     std::move(methods));
 }
 
 FunStmtPtr Parser::funStatement(const std::string &kind) {

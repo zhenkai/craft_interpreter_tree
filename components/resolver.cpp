@@ -52,6 +52,13 @@ StmtVisitorResT Resolver::visitClassStmt(const ClassStmt &c) {
   currentClass_ = ClassType::CLASS;
   declare(c.name);
   define(c.name);
+  if (c.super != nullptr && c.name.lexeme == c.super->name.lexeme) {
+    errorReporter_.report(c.super->name.line,
+                          " A class can't inherit from itself.");
+  }
+  if (c.super != nullptr) {
+    resolve(*c.super);
+  }
   beginScope();
   scopes_.back()["this"] = true;
   for (const auto &method : c.methods) {

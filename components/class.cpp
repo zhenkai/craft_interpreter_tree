@@ -16,6 +16,10 @@ FunPtr LoxClass::findMethod(const std::string &name) const {
     return methods_.at(name);
   }
 
+  if (super_ != nullptr) {
+    return super_->findMethod(name);
+  }
+
   return nullptr;
 }
 

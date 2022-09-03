@@ -113,11 +113,13 @@ using ReturnStmtPtr = std::unique_ptr<ReturnStmt>;
 
 class ClassStmt : public Stmt {
 public:
-  ClassStmt(const Token &name, std::vector<FunStmtPtr> methods)
-      : name(name), methods(std::move(methods)) {}
+  ClassStmt(const Token &name, VariablePtr super,
+            std::vector<FunStmtPtr> methods)
+      : name(name), super(std::move(super)), methods(std::move(methods)) {}
   StmtVisitorResT accept(StmtVisitor &visitor) const override;
 
   const Token name;
+  const VariablePtr super;
   const std::vector<FunStmtPtr> methods;
 };
 
