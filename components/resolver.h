@@ -12,7 +12,7 @@
 using SymbolMap = std::unordered_map<std::string, bool>;
 
 enum class FunctionType { NONE, FUNCTION, METHOD, INIT };
-enum class ClassType { NONE, CLASS };
+enum class ClassType { NONE, CLASS, SUBCLASS };
 
 class Interpreter;
 class Resolver : public ExprVisitor, public StmtVisitor {

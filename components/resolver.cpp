@@ -57,6 +57,7 @@ StmtVisitorResT Resolver::visitClassStmt(const ClassStmt &c) {
                           " A class can't inherit from itself.");
   }
   if (c.super != nullptr) {
+    currentClass_ = ClassType::SUBCLASS;
     resolve(*c.super);
   }
   if (c.super != nullptr) {
@@ -165,6 +166,13 @@ ExprVisitorResT Resolver::visitThisExpr(const This &expr) {
 }
 
 ExprVisitorResT Resolver::visitSuperExpr(const Super &expr) {
+  if (currentClass_ == ClassType::NONE) {
+    errorReporter_.report(expr.keyword.line,
+                          "Cannot use 'super' outside of a class.");
+  } else if (currentClass_ != ClassType::SUBCLASS) {
+    errorReporter_.report(expr.keyword.line,
+                          "Cannot use 'super' in a class with no super class.");
+  }
   resolveLocal(expr, expr.keyword);
   return ExprVisitorResT();
 }
