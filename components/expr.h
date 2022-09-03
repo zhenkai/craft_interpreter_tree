@@ -143,6 +143,18 @@ public:
 
 using ThisPtr = std::unique_ptr<This>;
 
+class Super : public Expr {
+public:
+  Super(const Token &keyword, const Token &method)
+      : keyword(keyword), method(method) {}
+  ExprVisitorResT accept(ExprVisitor &visitor) const override;
+
+  const Token keyword;
+  const Token method;
+};
+
+using SuperPtr = std::unique_ptr<Super>;
+
 class ExprVisitor {
 public:
   virtual ExprVisitorResT visitBinaryExpr(const Binary &expr) = 0;
@@ -156,5 +168,6 @@ public:
   virtual ExprVisitorResT visitGetExpr(const Get &expr) = 0;
   virtual ExprVisitorResT visitSetExpr(const Set &expr) = 0;
   virtual ExprVisitorResT visitThisExpr(const This &expr) = 0;
+  virtual ExprVisitorResT visitSuperExpr(const Super &expr) = 0;
   virtual ~ExprVisitor() = default;
 };

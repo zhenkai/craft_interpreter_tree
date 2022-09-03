@@ -22,9 +22,10 @@ factor         → unary ( ( "/" | "*" ) unary )* ;
 unary          → ( "!" | "-" ) unary | call ;
 call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
 arguments      → expression ( "," expression )* ;
-primary        → NUMBER | STRING | "true" | "false" | "nil"
-               | "(" expression ")" ;
-               | IDENTIFIER ;
+primary        → NUMBER | STRING | "true" | "false" | "nil" | "this"
+               | IDENTIFIER
+               | "(" expression ")"
+               | "super" "." IDENTIFIER ;
 ***/
 /*** Statement
 program        → declaration* EOF ;

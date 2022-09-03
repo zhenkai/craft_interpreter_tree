@@ -59,6 +59,11 @@ StmtVisitorResT Resolver::visitClassStmt(const ClassStmt &c) {
   if (c.super != nullptr) {
     resolve(*c.super);
   }
+  if (c.super != nullptr) {
+    beginScope();
+    scopes_.back()["super"] = true;
+  }
+
   beginScope();
   scopes_.back()["this"] = true;
   for (const auto &method : c.methods) {
@@ -67,6 +72,9 @@ StmtVisitorResT Resolver::visitClassStmt(const ClassStmt &c) {
     resolveFun(*method, decl);
   }
   endScope();
+  if (c.super != nullptr) {
+    endScope();
+  }
   currentClass_ = enclosingClass;
   return StmtVisitorResT();
 }
@@ -152,6 +160,11 @@ ExprVisitorResT Resolver::visitThisExpr(const This &expr) {
                           " Can't use 'this' outside of a class.");
     return ExprVisitorResT();
   }
+  resolveLocal(expr, expr.keyword);
+  return ExprVisitorResT();
+}
+
+ExprVisitorResT Resolver::visitSuperExpr(const Super &expr) {
   resolveLocal(expr, expr.keyword);
   return ExprVisitorResT();
 }

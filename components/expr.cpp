@@ -43,3 +43,7 @@ ExprVisitorResT Set::accept(ExprVisitor &visitor) const {
 ExprVisitorResT This::accept(ExprVisitor &visitor) const {
   return visitor.visitThisExpr(*this);
 }
+
+ExprVisitorResT Super::accept(ExprVisitor &visitor) const {
+  return visitor.visitSuperExpr(*this);
+}

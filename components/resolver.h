@@ -29,6 +29,7 @@ public:
   ExprVisitorResT visitGetExpr(const Get &expr) override;
   ExprVisitorResT visitSetExpr(const Set &expr) override;
   ExprVisitorResT visitThisExpr(const This &expr) override;
+  ExprVisitorResT visitSuperExpr(const Super &expr) override;
   StmtVisitorResT visitPrintStmt(const PrintStmt &stmt) override;
   StmtVisitorResT visitExpressionStmt(const ExpressionStmt &stmt) override;
   StmtVisitorResT visitVarDecl(const VarDecl &stmt) override;

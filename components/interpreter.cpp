@@ -123,6 +123,22 @@ ExprVisitorResT Interpreter::visitThisExpr(const This &expr) {
   return lookUpVariable(expr.keyword, expr);
 }
 
+ExprVisitorResT Interpreter::visitSuperExpr(const Super &expr) {
+  // should always have 'super' if we're visiting super here
+  int dist = locals_.at(id(expr));
+  ClassPtr superClass = any_cast<ClassPtr>(env_->getAt(dist, "super"));
+
+  // "this" exists in the environment one hop closer than the one that
+  // contains "super"
+  InstancePtr object = any_cast<InstancePtr>(env_->getAt(dist - 1, "this"));
+  FunPtr method = superClass->findMethod(expr.method.lexeme);
+  if (method == nullptr) {
+    throw new RuntimeError(expr.method.errorStr() + "Undefined property '" +
+                           expr.method.lexeme + "'.");
+  }
+  return method->bind(object);
+}
+
 std::any Interpreter::lookUpVariable(const Token &name, const Expr &expr) {
   if (locals_.find(id(expr)) != locals_.end()) {
     return env_->getAt(locals_.at(id(expr)), name.lexeme);
@@ -286,6 +302,10 @@ StmtVisitorResT Interpreter::visitClassStmt(const ClassStmt &stmt) {
   // Two-stage variable binding process allows references to the class
   //  inside its own methods.
   env_->define(stmt.name.lexeme, nullptr);
+  if (superPtr != nullptr) {
+    env_ = std::make_shared<Environment>(env_);
+    env_->define("super", superPtr);
+  }
   std::unordered_map<std::string, FunPtr> methods;
   for (const auto &method : stmt.methods) {
     FunPtr fun = std::make_shared<LoxFunction>(
@@ -295,6 +315,9 @@ StmtVisitorResT Interpreter::visitClassStmt(const ClassStmt &stmt) {
 
   auto klass = std::make_shared<LoxClass>(stmt.name.lexeme, superPtr,
                                           std::move(methods));
+  if (superPtr != nullptr) {
+    env_ = env_->enclosing();
+  }
   env_->assign(stmt.name, klass);
   return StmtVisitorResT();
 }

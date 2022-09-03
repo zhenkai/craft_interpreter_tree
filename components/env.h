@@ -19,6 +19,7 @@ public:
   void assignAt(int dist, const Token &name, const std::any &value);
   std::any get(const Token &token);
   std::any getAt(int dist, const std::string &name);
+  EnvPtr enclosing() { return enclosing_; }
 
 private:
   Environment *ancestor(int dist);
