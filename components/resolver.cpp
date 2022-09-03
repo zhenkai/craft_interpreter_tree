@@ -55,7 +55,8 @@ StmtVisitorResT Resolver::visitClassStmt(const ClassStmt &c) {
   beginScope();
   scopes_.back()["this"] = true;
   for (const auto &method : c.methods) {
-    FunctionType decl = FunctionType::METHOD;
+    FunctionType decl = method->name.lexeme == "init" ? FunctionType::INIT
+                                                      : FunctionType::METHOD;
     resolveFun(*method, decl);
   }
   endScope();
@@ -93,6 +94,10 @@ StmtVisitorResT Resolver::visitReturnStmt(const ReturnStmt &stmt) {
                           "Can't return from top-level code.");
   }
   if (stmt.value != nullptr) {
+    if (currentFunction_ == FunctionType::INIT) {
+      errorReporter_.report(stmt.keyword.line,
+                            "Can't return a value from an initializer.");
+    }
     resolve(stmt.value);
   }
   return StmtVisitorResT();

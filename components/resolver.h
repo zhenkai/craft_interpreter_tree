@@ -11,7 +11,7 @@
 // true: variable defined
 using SymbolMap = std::unordered_map<std::string, bool>;
 
-enum class FunctionType { NONE, FUNCTION, METHOD };
+enum class FunctionType { NONE, FUNCTION, METHOD, INIT };
 enum class ClassType { NONE, CLASS };
 
 class Interpreter;

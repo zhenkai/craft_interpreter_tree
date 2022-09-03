@@ -14,6 +14,8 @@ std::any LoxFunction::call(Interpreter &ip, const std::vector<std::any> &args) {
   try {
     ip.executeBlock(funDecl.body, env);
   } catch (Return *e) {
+    if (isInitializer_)
+      return closure_->getAt(0, "this");
     return e->value;
   }
   if (isInitializer_)
